@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/FireEye.sh"
+    dest: "/tmp/FireEye.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/FireEye.sh
+  args:
+    chdir: "/tmp"
+  register: FireEye 
+
+- debug:
+    var: FireEye

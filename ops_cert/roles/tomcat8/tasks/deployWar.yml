@@ -1,0 +1,29 @@
+# required external variable: app
+
+# - include_vars:
+#     file: "{{ playbook_dir }}/vars/defaults.yml"
+
+- name: remove old backup
+  become: yes
+  shell: "rm -rf {{ app.name }}.war.20*"
+  args:
+    chdir: "{{ tomcatPath }}/webapps"
+
+- name: backup old war and remove old directory
+  become: yes
+  shell: "mv -v {{ app.name }}.war {{ app.name }}.war.`date +%Y%m%d`; rm -fr {{ app.name }}/"
+  args:
+    chdir: "{{ tomcatPath }}/webapps"
+    removes: "{{ tomcatPath }}/webapps/{{ app.name }}.war"
+
+- name: download war file
+  become: yes
+  get_url:
+    url: "{{ app.downloadPath }}"
+    dest: "{{ tomcatPath }}/webapps/{{ app.name }}.war"
+    mode: 0755
+    force: yes
+  retries: 3
+  delay: 1
+  register: result
+  until: result is not failed

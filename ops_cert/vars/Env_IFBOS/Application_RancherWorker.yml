@@ -1,0 +1,8 @@
+health_check_http_enabled: true
+health_check_http:
+  rancher:
+    protocol: https
+    port: 443
+    path: /
+    status_code: 200
+    header_host: rancher-bos.navihealth.com

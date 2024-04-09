@@ -1,0 +1,105 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Tue Jul 13 10:40:09 EDT 2020
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+#  pre_tasks:
+#    - name: Include all main.yaml file for the ENV
+#      include_vars: "vars/{{envVar}}/main.yml"
+#    - name: Include file for the Env/Application
+#      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+    - import_role:
+        name: f5
+        tasks_from: getF5Info
+      when: envVar in ['Env_SG','Env_PR']
+#    - import_role:
+#        name: healthCheck
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  serial: "{{ (halfBatchVar | default('false') == 'true') | ternary('50%', '100%') }}"
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+    - include_role:
+        name: patchCheck
+        tasks_from: "{{ item }}"
+      with_items:
+        - prePatchInfo
+        - before
+
+    - copy:
+        src: "{{playbook_dir}}/files/patchCheck.sh"
+        dest: "/tmp/patchCheck/patchCheck.sh"
+        mode: "0755"
+        force: yes
+
+    - import_role:
+        name: patchCheck
+        tasks_from: after
+
+#    - name: Pause 2 seconds
+#      ansible.builtin.pause:
+#        seconds: 3
+#
+#    - reboot:
+#
+#    - pause:
+#        seconds: "{{ postHealthCheckWait | default(100) }}"
+#    - import_role:
+#        name: healthCheck
+#    - when: healthCheckHasError
+#      import_role:
+#        name: slack
+#      vars:
+#        slack_color: danger
+#        slack_msg: "Health check failed {{envVar | default('')}} {{applicationVar | default('')}}, please fix the errors. Remember to enable f5 if needed."
+#      delegate_to: localhost
+#      run_once: true
+#    - when: healthCheckHasError
+#      fail:
+#        msg: "Health check failed."
+#    - shell: cat /etc/redhat-release
+#      register: osVersion
+#
+#    - import_role:
+#        name: f5
+#        tasks_from: enableAllF5
+#      when: envVar in ['Env_SG','Env_PR'] and not healthCheckHasError
+#    - import_role:
+#        name: vcenter
+#        tasks_from: createAttribute
+#      vars:
+#        vcenterAttributeArray:
+#          - name: lastUpdatedTime
+#            value: "{{ lookup('pipe','date') }}"
+#          - name: osVersion
+#            value: "{{ osVersion.stdout }}"
+#    - shell: echo Testing
+#      register: Application
+#
+#    - shell: echo QA
+#      register: Env
+#
+#    - shell: cat /etc/redhat-release
+#      register: osVersion
+#
+#    - import_role:
+#        name: vcenter
+#        tasks_from: dvcreateAttribute
+#      vars:
+#        vcenterAttributeArray:
+#          - name: lastUpdatedTime
+#            value: "{{ lookup('pipe','date') }}"
+#          - name: osVersion
+#            value: "{{ osVersion.stdout }}"
+#          - name: Env
+#            value: "{{ Env.stdout }}"
+#          - name: Application
+#            value: "{{ Application.stdout }}"

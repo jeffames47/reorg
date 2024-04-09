@@ -1,0 +1,37 @@
+- name: install cortex
+  hosts: "{{ hostVar | default('all') }}"
+  gather_facts: false
+  become: yes
+  vars:
+    cortextFile: CortexXDR_Linux_72063914.rpm
+    uploadDir: /tmp
+  tasks:
+    - name: upload
+      copy:
+        src: "files/{{ cortextFile }}"
+        dest: "{{ uploadDir }}/{{ cortextFile }}"
+        force: no
+    # - copy:
+    #     src: "files/centos-base.repo"
+    #     dest: "/etc/yum.repos.d/test.repo"
+    #     force: yes
+#    - name: install selinux-policy-devel
+#      yum:
+#        name: selinux-policy-devel
+#        state: present
+        # disablerepo: "*"
+        # enablerepo: "test*"
+
+    - name: install
+      shell: "rpm -i {{ cortextFile }}"
+      args:
+        chdir: "{{ uploadDir }}"
+
+#    - name: remove cortextFile
+#      file:
+#        path: "{{ uploadDir }}/{{ cortextFile }}"
+#        state: absent
+#    - name: remove test repo
+#      file:
+#        path: "/etc/yum.repos.d/test.repo"
+#        state: absent

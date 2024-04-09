@@ -1,0 +1,75 @@
+# This playbook will: import root cert and make a backup
+# Last modified:  Thu Jun 10 13:11:22 EST 2021
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: false
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+#    - copy:
+#        src: "{{playbook_dir}}/files/yum.conf"
+#        dest: /etc/yum.conf
+
+#    - name: install yum util 
+#      shell: yum install yum-utils
+#      args:
+#        warn: no
+
+    - name: yum install libnl
+      shell: yum install libnl -y
+      args:
+        warn: no
+
+    - name: remove junk
+      shell: rm -rf SolarWinds ; rm -rf fireeye ; rm -rf Tanium ; rm -rf snow ; rm -rf Cimcor ; rm -rf Cimcor ; rm -rf  appdynamics
+      args:
+        warn: no
+
+    - name: remove1 yum_save_tx.*
+      shell: rm -rf /tmp/yum_save_tx.*
+      args:
+        warn: no
+
+    - name: remove2 initramfs*dump.img
+      shell: rm -rf rm /boot/initramfs-*dump.img
+      args:
+        warn: no
+
+    - name: remove3 old kernel
+      shell: yum remove kernel-3.10.0-957.el7.x86_64 -y
+      args:
+        warn: no
+
+    - name: clean4 kernel
+      shell: package-cleanup --oldkernels --count=2 -y
+      args:
+        warn: no
+
+    - name: remove5 kern.log
+      shell: echo " " > /var/log/kern.log
+      args:
+        warn: no
+
+    - name: remove6 /var/cache/yum/
+      shell: rm -rf /var/cache/yum/
+      args:
+        warn: no
+
+    - name: remove7 messages-
+      shell: echo " " > /var/log/messages
+      args:
+        warn: no
+
+    - name: remove8 messages-
+      shell: rm -rf /var/log/messages-*
+      args:
+        warn: no
+
+    - name: remove9 /var/log/lastlog
+      shell: echo " " > /var/log/lastlog
+      args:
+        warn: no

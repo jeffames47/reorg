@@ -1,0 +1,17 @@
+--- # Tasks to stop tomcat8
+
+- name: stop tomcat8
+  become: yes
+  shell: service "{{ tomcatServiceName }}" stop
+  ignore_errors: yes
+
+- name: stop tomcat8 using catalina
+  become: yes
+  shell: kill -9 $(ps aux | grep '[c]atalina' | awk '{print $2}')
+  ignore_errors: yes
+
+- name: clear tomcat8/work/Catalina directory
+  become: yes
+  file:
+    state: absent
+    path: "{{ tomcatPath }}/work/Catalina"

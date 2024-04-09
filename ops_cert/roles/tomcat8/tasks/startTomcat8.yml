@@ -1,0 +1,6 @@
+--- # Tasks to start tomcat8, make sure the tomcat8 already stopped
+
+- name: start tomcat8
+  become: yes
+  shell: service "{{ tomcatServiceName }}" start
+

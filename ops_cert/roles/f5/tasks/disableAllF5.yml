@@ -1,0 +1,21 @@
+- name: take down all nodes in the pool
+  become: no
+  delegate_to: localhost
+  run_once: true
+  block:
+    - include_vars:
+        file: "vars/{{ (envVar == 'Env_PR') | ternary('va-bigip.yml', 'ma-bigip.yml') }}"
+    - set_fact:
+        allF5Pools: "{{ ansible_play_batch | map('extract', hostvars, 'f5Pools') | select('defined') | list | flatten }}"
+    - bigip_pool_member:
+        state: disabled
+        partition: "{{ item.partition }}"
+        pool: "{{ item.poolName }}"
+        address: "{{ item.nodeName.split(':')[0] }}"
+        port: "{{ item.nodePort }}"
+        provider:
+          server: "{{ f5_server }}"
+          user: "{{ f5_user }}"
+          password: "{{ f5_password }}"
+          validate_certs: no
+      loop: "{{ allF5Pools }}"

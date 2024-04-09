@@ -1,0 +1,33 @@
+
+# search for existing startup message
+- name: get restart log
+  become: yes
+  shell: cat {{ tomcatLogPath }}/catalina.out | grep "org.apache.catalina.startup.Catalina.start Server startup in"
+  register: output
+  ignore_errors: yes
+
+- set_fact:
+    messageExists: "{{ output.stdout_lines | length > 0 }}"
+
+  
+- set_fact:
+    lastMessageIsRight: false
+  when: not messageExists
+
+- block:
+    - set_fact:
+        searchString: "^(?!"
+    - set_fact:
+        searchString: "{{ searchString }}{{ item.split(' ')[0] }} {{ item.split(' ')[1] }}|"
+      with_items: "{{ output.stdout_lines }}"
+    - set_fact:
+        searchString: "{{ searchString | regex_replace('\\|$', '') }}).*"
+  when: messageExists
+- set_fact:
+    searchString: "{{ searchString | default('') }}org.apache.catalina.startup.Catalina.start Server startup in" 
+- name: wait until start message show up in catalina.out
+  become: yes
+  wait_for:
+    path: "{{ tomcatLogPath }}/catalina.out"
+    search_regex: "{{ searchString }}"
+    timeout: 1080

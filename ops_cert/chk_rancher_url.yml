@@ -1,0 +1,15 @@
+- name: upload chk_rancher_url.sh
+  copy:
+    src: "{{ role_path }}/files/chk_rancher_url.sh"
+    dest: "/tmp/chk_rancher_url.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/chk_rancher_url.sh rancher-bos
+  args:
+    chdir: "/tmp"
+  register: chk_rancher_url
+
+- debug:
+    var: chk_rancher_url

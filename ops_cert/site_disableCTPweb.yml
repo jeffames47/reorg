@@ -1,0 +1,14 @@
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: false
+  tasks:
+    - import_role:
+        name: f5
+        tasks_from: getF5Info
+      tags: 
+        - f5
+    - import_role:
+        name: f5
+        tasks_from: disableAllF5
+      tags: 
+        - f5
+

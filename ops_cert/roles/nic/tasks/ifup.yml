@@ -1,0 +1,16 @@
+- block:
+    - shell: "route | grep '^default' | grep -o '[^ ]*$'"
+      register: defaultNic
+    - set_fact:
+        defaultNic: "{{ defaultNic.stdout }}"
+  rescue:
+    - shell: ls /etc/sysconfig/network-scripts/ | grep ifcfg | head -1
+      register: output
+    - set_fact:
+        defaultNic: "{{ output.stdout | replace('ifcfg-','') }}"
+- debug:
+    var: defaultNic
+- shell: "ifup {{ defaultNic }}"
+
+- wait_for_connection:
+    timeout: "{{ waitForTimeout | default(600) }}"

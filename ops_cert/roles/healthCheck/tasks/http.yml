@@ -1,0 +1,60 @@
+# In progress http health check, want it to work exactly like heartbeat.yml but be able to define status code in var
+
+- name: debugging loop
+  debug:
+    msg: "{{ item }}"
+  loop: "{{ health_check_http | dict2items  }}"
+
+- name: Check health urls
+  uri:
+    method: "{{ item.value.method  | default('GET')}}"
+    url: '{{ item.value.protocol }}://{{ inventory_hostname }}:{{ item.value.port }}/{{ item.value.path }}'
+    validate_certs: "{{ item.value.validate_certs | default('false') }}"
+    return_content: "{{ item.value.return_content | default('yes') }}"
+    body_format: "{{ item.value.body_format  | default('json')}}"
+    status_code: "{{ accepted_status_codes }}"
+    headers:
+      host: "{{ item.value.header_host  | default('') }}"
+  ignore_errors: "{{ item.value.ignore_errors | default('yes') }}"
+  register: healthCheckResult
+  loop: "{{ health_check_http | dict2items  }}"
+
+- set_fact:
+    healthCheckGood: []
+    healthCheckBad: []
+
+- set_fact:
+    healthCheckGood: "{{ healthCheckGood }} + [ '{{ result.url }}' ]"
+  when: result.status == 200
+  with_items: "{{ healthCheckResult.results }}"
+  loop_control:
+    loop_var: result
+
+- set_fact:
+    healthCheckBad: "{{ healthCheckBad }} + [ '{{ result.url }}' ]"
+  when: result.status != 200
+  with_items: "{{ healthCheckResult.results }}"
+  loop_control:
+    loop_var: result
+
+    
+# do the output from local
+- delegate_to: localhost
+  run_once: true
+  become: no
+  block:
+    - set_fact:
+        allHealthCheckGood: "{{ ansible_play_batch | map('extract', hostvars, 'healthCheckGood') | select('defined') | list | flatten }}"
+        allHealthCheckBad: "{{ ansible_play_batch | map('extract', hostvars, 'healthCheckBad') | select('defined') | list | flatten }}"
+    - when: allHealthCheckGood | length > 0
+      include_role:
+        name: slack
+      vars:
+        slack_color: good
+        slack_msg: "```{{ allHealthCheckGood | join('\n') }}```"
+    - when: allHealthCheckBad | length > 0
+      include_role:
+        name: slack
+      vars:
+        slack_color: danger
+        slack_msg: "```{{ allHealthCheckBad | join('\n') }}```"

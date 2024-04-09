@@ -1,0 +1,9 @@
+- set_fact:
+    targetVcenter: "{{ targetVcenter | default(bosVcenter) }}"
+
+- name: Restart service httpd, in all cases
+  become: yes
+  service:
+    name: httpd
+    state: restarted
+

@@ -1,0 +1,19 @@
+- set_fact:
+# prod va vcenter      targetVcenter: "{{ targetVcenter | default(iadVcenter) }}"
+    targetVcenter: "{{ targetVcenter | default(iadVcenter) }}"
+#  below is p10 "mostly windows but some unix" vcenter
+#    targetVcenter: "{{ targetVcenter | default(bnaVcenter) }}"
+#  below is  waldev
+#    targetVcenter: "{{ targetVcenter | default(bosVcenter) }}"
+
+- name: add attributes to vm
+  become: no
+  vmware_guest_custom_attributes:
+    hostname: "{{ targetVcenter.host }}"
+    username: "{{ targetVcenter.username }}"
+    password: "{{ targetVcenter.password }}"
+    name: "{{ nodeNameInVcenter | default(inventory_hostname_short) }}"
+    state: present
+    attributes: "{{ vcenterAttributeArray }}"
+    validate_certs : false
+  delegate_to: localhost

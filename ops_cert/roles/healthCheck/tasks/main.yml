@@ -1,0 +1,32 @@
+- import_role:
+    name: slack
+  vars:
+    slack_msg: "Starting Health Check {{envVar | default('')}} {{applicationVar | default('')}}"
+  delegate_to: localhost
+  become: no
+  run_once: true
+
+- include_tasks: port.yml
+
+- when: health_check_mnt_point_enabled == true
+  include_tasks: mount.yml
+
+- when: health_check_url_enabled == true
+  include_tasks: heartBeat.yml
+
+- when: health_check_http_enabled == true
+  include_tasks: http.yml
+
+- import_role:
+    name: slack
+  vars:
+    slack_msg: "End Health Check {{envVar | default('')}} {{applicationVar | default('')}}"
+  delegate_to: localhost
+  become: no
+  run_once: true
+  
+- set_fact:
+    healthCheckHasError: "{{ (allHealthCheckBad is defined and allHealthCheckBad | length > 0) or (allBadMounts is defined and allBadMounts | length > 0) or (allDownPorts is defined and allDownPorts | length > 0) }}"
+  delegate_to: localhost
+  become: no
+  run_once: true

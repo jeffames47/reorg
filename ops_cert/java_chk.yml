@@ -1,0 +1,27 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Thu Jul  6 12:55:01 EST 2023
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: false
+#  gather_facts: true
+  become: yes
+  tasks:
+
+    - import_role:
+       name: patchCheck
+       tasks_from: chk_java
+
+    - name: remove script
+      shell: rm -f /tmp/java_chk.sh
+      args:
+        warn: no
+
+    - name: remove /tmp/yum_save_tx.202
+      shell: rm -f /tmp/yum_save_tx.202*
+      args:
+        warn: no
+
+    - name: remove rm -rf /tmp/ansible_command_payloa
+      shell: rm -rf /tmp/ansible_command_payload*
+      args:
+        warn: no

@@ -1,0 +1,30 @@
+
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+
+  tasks:
+  - name: check
+    stat:
+      path: "/mnt/auto/nas02/netops/env-tools/staging/cred.xml"
+#      path: "/opt/snow"
+    register: file_data
+
+  - name: report 
+    debug:
+      msg: "The file or directory exists"
+    when: file_data.stat.exists
+#    when: register_name.stat.exists and register_name.stat.isreg
+
+# https://phoenixnap.com/kb/ansible-check-if-file-exists
+#  - name: check file
+#    debug:
+#      msg: " The file or directory exists"
+#    when: register_name.stat.exists and register_name.stat.isreg

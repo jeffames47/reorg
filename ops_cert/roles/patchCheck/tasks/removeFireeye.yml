@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/removeFireeye.sh"
+    dest: "/tmp/removeFireeye.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/removeFireeye.sh
+  args:
+    chdir: "/tmp"
+  register: removeFireeye
+
+- debug:
+    var: removeFireeye

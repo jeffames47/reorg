@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/removeSnow.sh"
+    dest: "/tmp/removeSnow.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/removeSnow.sh
+  args:
+    chdir: "/tmp"
+  register: removeSnow
+
+- debug:
+    var: removeSnow

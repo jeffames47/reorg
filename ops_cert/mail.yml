@@ -1,0 +1,13 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: 5/3 150PM 
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  ### any_errors_fatal: True
+  tasks:
+
+    - import_role:
+       name: patchCheck
+       tasks_from: mail.yml
+

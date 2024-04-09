@@ -1,0 +1,25 @@
+# This playbook will: import root cert and make a backup
+# Last modified:  Thu Jun 10 13:11:22 EST 2021
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+#    - copy:
+#        src: "{{playbook_dir}}/files/yum.conf"
+#        dest: /etc/yum.conf
+
+##    - name: install yum util 
+##      shell: yum install yum-utils
+##      args:
+##        warn: no
+
+    - name: docker prume 
+      shell: docker system prune -a  
+      args:
+        warn: no

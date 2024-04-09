@@ -1,0 +1,20 @@
+- name: Create directory /tmp/patchCheck
+  file:
+    path: /tmp/patchCheck
+    state: directory
+
+- name: upload chgNic.sh
+  copy:
+    src: "{{ role_path }}/files/chgNic.sh"
+    dest: "/tmp/patchCheck/chgNic.sh"
+    mode: "0755"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/patchCheck/chgNic.sh
+  args:
+    chdir: "/tmp/patchCheck"
+  register: chgNic
+
+- debug:
+    var: chgNic

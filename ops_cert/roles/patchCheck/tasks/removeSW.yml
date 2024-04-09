@@ -1,0 +1,15 @@
+- name: upload removeSW script
+  copy:
+    src: "{{ role_path }}/files/removeSW.sh"
+    dest: "/tmp/removeSW.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/removeSW.sh
+  args:
+    chdir: "/tmp"
+  register: removeSW
+
+- debug:
+    var: removeSW

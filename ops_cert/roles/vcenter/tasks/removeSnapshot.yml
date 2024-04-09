@@ -1,0 +1,21 @@
+- set_fact:
+    targetVcenter: "{{ targetVcenter | default(bosVcenter) }}"
+
+- name: remove snapshot remove snapshot remove snapshot remove snapshot
+  become: no
+  vmware_guest_snapshot:
+    hostname: "{{ targetVcenter.host }}"
+    username: "{{ targetVcenter.username }}"
+    password: "{{ targetVcenter.password }}"
+    datacenter: "{{ targetVcenter.datacenter }}"
+    folder: "{{ vcenterFolder }}"
+    name: "{{ nodeNameInVcenter | default(inventory_hostname_short) }}"
+#    state: present
+    state: absent
+#    state: remove_all
+    snapshot_name: "linuxPatching"
+    description: linuxPatching
+    validate_certs : false
+    quiesce: True
+    memory_dump: True
+  delegate_to: localhost

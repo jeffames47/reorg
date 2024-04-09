@@ -1,0 +1,13 @@
+health_check_tomcat_enabled: false
+
+health_check_apache_enabled: false
+
+health_check_mnt_point_enabled: false
+
+health_check_url_enabled: true
+health_check_url:
+  NHsearch:
+    - http
+    - 8080
+    - nhsearch/swagger-ui/index.html
+

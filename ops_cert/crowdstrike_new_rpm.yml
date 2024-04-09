@@ -1,0 +1,43 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: 3/28
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: false
+  become: yes
+#  pre_tasks:
+#    - name: Include all main.yaml file for the ENV
+#      include_vars: "vars/{{envVar}}/main.yml"
+#    - name: Include file for the Env/Application
+#      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+
+#    - name: yum install libnl 
+#      shell: yum install libnl -y
+#      args:
+#        warn: no
+#
+#    - name: yum install openssl
+#      shell: yum install openssl -y
+#      args:
+#        warn: no
+############################################ .el7 is centos 7 that is old openssl
+##    - copy:
+##        src: "files/falcon-sensor-6.46.0-14306.el7.x86_64.rpm"
+##        dest: /tmp
+############################################ .el6 is centos 6 that is old openssl
+##    - copy:
+##        src: "files/falcon-sensor-6.50.0-14712.el6.x86_64.rpm"
+##        dest: /tmp
+############################### below falcon-sensor-7.05.0-16004.el7.x86_64.rpm   is the new one from ryan for new openssl and centos 7 
+    - copy:
+        src: "files/falcon-sensor-7.05.0-16004.el7.x86_64.rpm"
+        dest: /tmp
+
+    - import_role:
+       name: patchCheck
+       tasks_from: cs
+
+#    - name: remove stuff 
+#      shell: rm -f /tmp/falcon-sensor*.rpm
+#      args:
+#        warn: no

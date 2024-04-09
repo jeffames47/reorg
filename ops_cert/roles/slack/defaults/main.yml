@@ -1,0 +1,11 @@
+ansibleTestToken: T59UE48PP/BSZLB139V/eX4NQyLSixxHB93yhM1QxQqg
+csiDeploymentToken: T59UE48PP/BSK4C695Y/jQrd8QyKLfcNBk1nMBcpBT8a
+coreSystemsMonthlyDeploymentToken: T59UE48PP/BSXE4TK3N/lAB3IgufXWevoINhX6XIJcvh
+transitionMonthlyDeploymentsToken: T59UE48PP/BSXU5A761/W71wVwHh3iG94oNzEpAxdnxX
+integrationTeamDeploymentToken: T59UE48PP/BSLE2U5PV/wYedcDkpAeK8c8xy5vdQyvgV
+linuxPatchingToken: T59UE48PP/BVCN7RV37/Md8g3ktWHXBKqGjrK0Ufvhfl
+
+defaultSlackToken: "{{ ansibleTestToken }}"
+
+slackTopic:
+  

@@ -1,0 +1,50 @@
+- name: Check health urls
+  uri:
+    url: '{{item.value[0]}}://{{inventory_hostname}}:{{item.value[1]}}/{{item.value[2]}}'
+    validate_certs: false
+    return_content: yes
+    body_format: json
+    status_code: "200"
+  ignore_errors: yes
+  register: healthCheckResult
+  loop: "{{ health_check_url | dict2items  }}"
+
+- set_fact:
+    healthCheckGood: []
+    healthCheckBad: []
+
+- set_fact:
+    healthCheckGood: "{{ healthCheckGood }} + [ '{{ result.url }}' ]"
+  when: result.status == 200
+  with_items: "{{ healthCheckResult.results }}"
+  loop_control:
+    loop_var: result
+
+- set_fact:
+    healthCheckBad: "{{ healthCheckBad }} + [ '{{ result.url }}' ]"
+  when: result.status != 200
+  with_items: "{{ healthCheckResult.results }}"
+  loop_control:
+    loop_var: result
+
+    
+# do the output from local
+- delegate_to: localhost
+  run_once: true
+  become: no
+  block:
+    - set_fact:
+        allHealthCheckGood: "{{ ansible_play_batch | map('extract', hostvars, 'healthCheckGood') | select('defined') | list | flatten }}"
+        allHealthCheckBad: "{{ ansible_play_batch | map('extract', hostvars, 'healthCheckBad') | select('defined') | list | flatten }}"
+    - when: allHealthCheckGood | length > 0
+      include_role:
+        name: slack
+      vars:
+        slack_color: good
+        slack_msg: "```{{ allHealthCheckGood | join('\n') }}```"
+    - when: allHealthCheckBad | length > 0
+      include_role:
+        name: slack
+      vars:
+        slack_color: danger
+        slack_msg: "```{{ allHealthCheckBad | join('\n') }}```"

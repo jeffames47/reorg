@@ -1,0 +1,55 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Thu Jul  6 12:55:01 EST 2023
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: false
+#  gather_facts: true
+  become: yes
+  tasks:
+
+
+#    - name: fix curl
+#      shell: rpm -e curl-7.29.0-51.el7.x86_64
+#      args:
+#        warn: no
+
+#    - name:  nss part 1 
+#      shell: rpm -e nss-sysinit-3.67.0-4.el7_9.x86_64
+#      args:
+#        warn: no
+
+#    - name:  nss part 2 
+#      shell: rpm -e nss-3.67.0-4.el7_9.x86_64
+#      args:
+#        warn: no
+
+#    - name: rpm
+#      shell: rpm -ev --nodeps git-1.8.3.1-23.el7_8.x86_64
+#      args:
+#        warn: no
+
+
+    - name: libxml2  
+      shell: rpm -ev --nodeps libxml2-2.9.1-6.el7_2.3.x86_64
+      args:
+        warn: no
+
+#    - name: yum update git
+#      shell: yum update git -y
+#      args:
+#        warn: no
+#
+#    - name: yum update nss-devel
+#      shell: yum update nss-devel -y
+#      args:
+#        warn: no
+#
+#    - name: yum update nss 
+#      shell: yum update nss -y
+#      args:
+#        warn: no
+#
+#    - name: yum update systemd
+#      shell: yum update systemd -y
+#      args:
+#`        warn: no

@@ -1,0 +1,39 @@
+health_check_url_enabled: true
+health_check_url:
+  # Team: Intake | mnt: cred.xml
+  datacleaner:
+    - http
+    - 8081
+    - datacleaner/services/health
+  # Team: CommonContainer | mnt: cred.xml, aws token (same dir)
+  platformsupportservice:
+    - https
+    - 443
+    - /platformsupportservice/services/actuator/health
+  # Team: Dischared 2.0 | mnt: cred.xml
+  formdataservice:
+    - http
+    - 8081
+    - formdataservice/services/actuator/health
+  # Team: Dischared 2.0 | mnt: cred.xml, edisdocs, aws_edisdocs
+  transitioncoreservice:
+    - https
+    - 443
+    - transitioncoreservice/services/heartbeat/test
+  # Team: Admin | mnt: cred.xml
+  transitionsecurityservice:
+    - https
+    - 443
+    - transitionsecurityservice/services/heartbeat/test
+
+health_check_tomcat_enabled: true
+health_tomcat_port: 8081
+
+health_check_apache_enabled: true
+health_apache_port: 80
+
+health_check_mnt_point_enabled: true
+health_mnt_point:
+  - /mnt/auto/nas01/netops/env-tools/pfnet
+  - /mnt/edisdocs
+  - /mnt/aws_edisdocs

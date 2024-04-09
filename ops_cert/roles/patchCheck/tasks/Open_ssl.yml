@@ -1,0 +1,40 @@
+- name: upload script
+
+  copy:
+    src: "{{ role_path }}/files/openssl.sh"
+    dest: "opt/openssl"
+    mode: "777"
+    force: yes
+
+  copy:
+    src: "{{ role_path }}/files/openssl.sh"
+    dest: "/etc/profile.d/openssl.sh"
+    mode: "777"
+    force: yes
+
+  copy:
+    src: "{{ role_path }}/files/openssl.sh"
+    dest: "/etc/profile.d"
+    mode: "777"
+    force: yes
+
+  copy:
+    src: "{{ role_path }}/files/Open_ssl.sh"
+    dest: "/opt/openssl"
+    mode: "777"
+    force: yes
+
+##- name: execute
+##  shell: sh /opt/openssl/openssl-1.1.1l/Open_ssl.sh
+##  args:
+##    chdir: "/opt/openssl/openssl-1.1.1l"
+##  register: Open_ssl
+
+- name: execute
+  shell: sh /opt/openssl/Open_ssl.sh
+  args:
+    chdir: "/opt/openssl"
+  register: Open_ssl
+
+- debug:
+    var: Open_ssl

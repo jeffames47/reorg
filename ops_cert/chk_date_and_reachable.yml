@@ -1,0 +1,32 @@
+
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+
+  tasks:
+#  - name: check
+#    stat:
+##      path: "/opt/snow/snowagent.config"
+#      path: "/opt/snow"
+#    register: file_data
+#
+#  - name: report 
+#    debug:
+#      msg: "The file or directory exists"
+#    when: file_data.stat.exists
+##    when: register_name.stat.exists and register_name.stat.isreg
+
+  - name: Ansible fact - ansible_date_time
+    debug:
+     var: ansible_date_time
+
+  - name: Ansible fact - ansible_date_time.iso8601
+    debug:
+     msg: "Timestamp in the ISO8601 format: {{ ansible_date_time.iso8601 }}"

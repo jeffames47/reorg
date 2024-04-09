@@ -1,0 +1,25 @@
+health_check_url_enabled: true
+health_check_url:
+  orgagg:
+    - http
+    - 7080
+    - support/health
+    - support/info
+
+#verify_organizationAggregation:
+#  name: organizationAggregation
+#  servers:
+#    - http://p10storgagg01.navihealth.local:7080/support
+#    - http://p10storgagg02.navihealth.local:7080/support
+#  version: "{{ csiVersion }}"
+#  statusKey: "status"
+#  versionKey: "version"
+
+health_check_tomcat_enabled: false
+
+health_check_tomcat_enabled: false
+
+health_check_apache_enabled: false
+
+health_check_mnt_point_enabled: false
+

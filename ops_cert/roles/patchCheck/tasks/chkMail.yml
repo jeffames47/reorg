@@ -1,0 +1,15 @@
+- name: upload 
+  copy:
+    src: "{{ role_path }}/files/chkMail.sh"
+    dest: "/usr/local/chkMail.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /usr/local/chkMail.sh Cim
+  args:
+    chdir: "/usr/local"
+  register: chkMail
+
+- debug:
+    var: chkMail

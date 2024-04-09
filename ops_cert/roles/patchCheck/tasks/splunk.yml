@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/splunk.sh"
+    dest: "/tmp/splunk.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/splunk.sh
+  args:
+    chdir: "/tmp"
+  register: splunk
+
+- debug:
+    var: splunk

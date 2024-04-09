@@ -1,0 +1,28 @@
+- run_once: true
+  become: no
+  ignore_errors: yes
+  block:
+    - name: enable shard allocation
+      uri:
+        url: "http://{{inventory_hostname}}:9200/_cluster/settings"
+        method: PUT
+        body: "{{ enableShardPayload | to_json }}"
+        body_format: json
+      vars:
+        enableShardPayload:
+          persistent:
+            cluster.routing.allocation.enable: null
+    # - name: start machine learning jobs
+    #   uri:
+    #     url: "http://{{inventory_hostname}}:9200/_ml/set_upgrade_mode?enabled=false"
+    #     method: POST
+    - name: delete old .kibana index
+      when: upgradeKibana | default(false)
+      uri:
+        url: "http://{{inventory_hostname}}:9200/.kibana"
+        method: DELETE
+    
+- when: upgradeKibana | default(false) 
+  service:
+    name: kibana
+    state: restarted

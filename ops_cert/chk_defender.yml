@@ -1,0 +1,10 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: 9/9/21
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  tasks:
+    - import_role:
+       name: patchCheck
+       tasks_from: chk_defender

@@ -1,0 +1,11 @@
+# This playbook will: perform a docker installtion and check
+# Last modified: 9/9/21
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  tasks:
+    - import_role:
+       name: patchCheck
+       tasks_from: docker_install
+#       tasks_from: docker_install1

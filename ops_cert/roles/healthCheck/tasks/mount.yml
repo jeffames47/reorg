@@ -1,0 +1,43 @@
+- name: Check mount points
+  stat:
+    path: "{{item}}"
+  become: yes
+  become_user: tomcat
+  register: mountStat
+  with_items: "{{ health_mnt_point}}"
+
+- set_fact:
+    goodMounts: []
+    badMounts: []
+
+- when: not item.stat.exists or not item.stat.isdir or not item.stat.readable 
+  set_fact:
+    badMounts: "{{ badMounts }} + [ '{{ inventory_hostname }}: {{ item.item }}' ]"
+  with_items: "{{ mountStat.results }}"
+
+- when: item.stat.exists and item.stat.isdir and item.stat.readable 
+  set_fact:
+    goodMounts: "{{ goodMounts }} + [ '{{ inventory_hostname }}: {{ item.item }}' ]"
+  with_items: "{{ mountStat.results }}"
+    
+# do the output from local
+- delegate_to: localhost
+  run_once: true
+  become: no
+  block:
+    - set_fact:
+        allBadMounts: "{{ ansible_play_batch | map('extract', hostvars, 'badMounts') | select('defined') | list | flatten }}"
+        allGoodMounts: "{{ ansible_play_batch | map('extract', hostvars, 'goodMounts') | select('defined') | list | flatten }}"
+    - when: allGoodMounts | length > 0
+      include_role:
+        name: slack
+      vars:
+        slack_color: good
+        slack_msg: "```{{ allGoodMounts | join('\n') }}```"
+    - when: allBadMounts | length > 0
+      include_role:
+        name: slack
+      vars:
+        slack_color: danger
+        slack_msg: "```{{ allBadMounts | join('\n') }}```"
+    

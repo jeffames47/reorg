@@ -1,0 +1,41 @@
+
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  vars:
+    package_names:
+      - cortex-agent-7.2.0.63914-1.x86_64
+# test      - cortexasfsafafd-agent-7.2.0.63914-1.x86_64
+#      - vim 
+#      - telnet
+
+  tasks:
+  - name: "Check if vim package is installed or not on Debian Linux family"
+    package:
+      name: "{{ item }}"
+      state: present
+    check_mode: true
+    loop: "{{ package_names }}"
+    register: package_check
+
+  - name: "Print execution results"
+    debug:
+      msg: "Package is installed"
+    when: package_check is succeeded
+
+#  - name: check
+#    stat:
+#      path: "/opt/snow/snowagent.config"
+##      path: "/opt/snow"
+#    register: file_data
+#
+#  - name: report 
+#    debug:
+#      msg: "The file or directory exists"
+#    when: file_data.stat.exists

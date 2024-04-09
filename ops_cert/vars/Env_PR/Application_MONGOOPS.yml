@@ -1,0 +1,13 @@
+health_check_url_enabled: false
+#health_check_url:
+#  mongoOPS:
+#    - https
+#    - 8080
+
+health_check_tomcat_enabled: false
+
+health_check_apache_enabled: false
+
+health_check_mnt_point_enabled: true
+health_mnt_point:
+  - /mnt/mongodb-backup

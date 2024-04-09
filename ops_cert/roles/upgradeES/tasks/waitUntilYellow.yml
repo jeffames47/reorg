@@ -1,0 +1,10 @@
+- run_once: true
+  become: no
+  uri:
+    url: "http://{{inventory_hostname}}:9200/_cluster/health"
+    method: GET
+    return_content: yes
+  register: clusterHealth
+  until: clusterHealth.json.status in ['yellow','green']
+  retries: 60
+  delay: 5

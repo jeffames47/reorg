@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/chknessus.sh"
+    dest: "/tmp/chknessus.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/chknessus.sh
+  args:
+    chdir: "/tmp"
+  register: chknessus
+
+- debug:
+    var: chknessus

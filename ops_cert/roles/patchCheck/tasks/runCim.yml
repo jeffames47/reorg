@@ -1,0 +1,13 @@
+- name: Create directory /tmp/LINUX
+  file:
+    path: /tmp/LINUX
+    state: directory
+
+- name: execute Cimtrak
+  shell: sh installCimTrak.sh
+  args:
+    chdir: "/tmp/LINUX"
+  register: CimtrakRun
+
+- debug:
+    var: CimtrakRun

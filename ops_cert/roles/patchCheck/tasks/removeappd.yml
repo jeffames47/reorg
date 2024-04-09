@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/removeappd.sh"
+    dest: "/tmp/removeappd.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/removeappd.sh
+  args:
+    chdir: "/tmp"
+  register: removeappd
+
+- debug:
+    var: removeappd

@@ -1,0 +1,15 @@
+- set_fact:
+    targetVcenter: "{{ targetVcenter | default(iadVcenter) }}"
+#    targetVcenter: "{{ targetVcenter | default(bosVcenter) }}"
+
+- name: add attributes to vm
+  become: no
+  vmware_guest_custom_attributes:
+    hostname: "{{ targetVcenter.host }}"
+    username: "{{ targetVcenter.username }}"
+    password: "{{ targetVcenter.password }}"
+    name: "{{ nodeNameInVcenter | default(inventory_hostname_short) }}"
+    state: present
+    attributes: "{{ vcenterAttributeArray }}"
+    validate_certs : false
+  delegate_to: localhost

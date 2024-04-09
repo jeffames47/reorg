@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/java_remove_worked.sh"
+    dest: "/tmp/java_remove_worked.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/java_remove_worked.sh
+  args:
+    chdir: "/tmp"
+  register: java_remove_worked
+
+- debug:
+    var: java_remove_worked

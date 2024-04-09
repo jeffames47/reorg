@@ -1,0 +1,4 @@
+# tomcatPath and tomcatService name can be overwritten by inventory group vars
+tomcatPath: /usr/share/tomcat8
+tomcatServiceName: tomcat8
+tomcatLogPath: /var/log/tomcat8

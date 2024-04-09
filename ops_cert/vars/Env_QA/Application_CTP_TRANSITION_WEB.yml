@@ -1,0 +1,45 @@
+health_check_url_enabled: true
+health_check_url:
+  caretransitionweb:
+    - https
+    - 443
+    - connect/caretransitionweb/services/heartbeat/test
+  docmanager:
+    - https
+    - 443
+    - connect/docmanager/services/heartbeat/test
+  coordinatedcare:
+    - https
+    - 443
+    - connect/coordinatedcare/services/health #(IP Authenticated)
+  #    - connect/coordinatedcare/services/heartbeat/test | connect/coordinatedcare/services/health
+  addressbookweb:
+    - https
+    - 443
+    - connect/addressbookweb/services/heartbeat/test
+  providernetworks:
+    - https
+    - 443
+    - connect/providernetworks/services/heartbeat/test
+  admin:
+    - https
+    - 443
+    - connect/admin/services/heartbeat/test
+  commonservices:
+    - https
+    - 443
+    - connect/commonservices/services/heartbeat/test
+
+health_check_tomcat_enabled: true
+health_tomcat_port: 8081
+
+health_check_apache_enabled: true
+health_apache_port: 80
+
+health_check_mnt_point_enabled: true
+health_mnt_point:
+  - /mnt/auto/nas02/netops/env-tools/qanet
+  - /mnt/ediscache/cache
+  - /mnt/edisdocs
+  - /mnt/aws_edisdocs
+  - /mnt/images

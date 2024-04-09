@@ -1,0 +1,8 @@
+---
+- name: Reboot VM using shell command
+  hosts: all
+  become: true
+  tasks:
+    - name: Reboot the VM
+      shell: reboot
+

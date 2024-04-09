@@ -1,0 +1,26 @@
+# This playbook will: import root cert and make a backup
+# Last modified:  Friday  Feb 2021:14:47 CDT 2020
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+#    - import_role:
+#        name: vcenter
+#        tasks_from: createSnapshot.yml
+    - name: backup java cacerts
+      shell: cp -pf /etc/pki/ca-trust/extracted/java/cacerts /etc/pki/ca-trust/extracted/java/cacerts.bak.rootcert
+    - import_role:
+        name: patchCheck
+        tasks_from: cert_install
+    - name: restore java cacerts
+      shell: cp -pf /etc/pki/ca-trust/extracted/java/cacerts /etc/pki/ca-trust/extracted/java/cacerts.bak.previous; mv -f /etc/pki/ca-trust/extracted/java/cacerts.bak.rootcert /etc/pki/ca-trust/extracted/java/cacerts
+    - name: remove script from tmp
+      shell: rm -f /tmp/cert_install.sh
+      args:
+        warn: no

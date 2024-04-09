@@ -1,0 +1,37 @@
+health_check_tomcat_enabled: false
+
+health_check_apache_enabled: false
+
+health_check_mnt_point_enabled: false
+
+health_check_url_enabled: true
+health_check_url:
+  dataloader:
+    - http
+    - 8080
+    - health
+    - info
+
+#health_check_url_enabled: true
+#health_check_url:
+#    - info
+#
+#verify_patientDataLoader:
+#  name: patientDataLoader
+#  servers:
+#    - http://mavsg-csidl-01.curaspan.local:8080
+#    - http://mavsg-csidl-02.curaspan.local:8080
+#  version: "{{ csiVersion }}"
+#  statusKey: "status"
+#  versionKey: "build.version"
+#
+#health_check_tomcat_enabled: false
+#health_tomcat_port: 8080
+#
+#health_check_apache_enabled: false
+#health_apache_port: 80
+#
+#health_check_mnt_point_enabled: false
+#health_mnt_point:
+#    - /mnt/auto/nas02/netops/env-tools/devnet
+#

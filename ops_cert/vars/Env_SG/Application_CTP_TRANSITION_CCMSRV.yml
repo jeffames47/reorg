@@ -1,0 +1,37 @@
+health_check_url_enabled: true
+health_check_url:
+  formaggregationservice:
+    - http
+    - 8080
+    - formaggregationservice/services/health
+  casehistoryservice:
+    - http
+    - 8080
+    - casehistoryservice/services/actuator/health
+  addressbookservice:
+    - http
+    - 8080
+    - addressbookservice/services/health
+  printerqservice:
+    - http
+    - 8080
+    - printerqservice/services/heartbeat/test
+  transitionvbcservice:
+    - http
+    - 8080
+    - transitionvbcservice/services/health
+  quickcaseservice:
+    - http
+    - 8080
+    - quickcaseservice/services/heartbeat/test
+
+health_check_tomcat_enabled: true
+health_tomcat_port: 8080
+
+health_check_apache_enabled: false
+health_apache_port: 80
+
+health_check_mnt_point_enabled: true
+health_mnt_point:
+  - /mnt/auto/nas02/netops/env-tools/staging
+  - /mnt/edisdocs

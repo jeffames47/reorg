@@ -1,0 +1,15 @@
+- name: upload chk_service_Open_ssl
+  copy:
+    src: "{{ role_path }}/files/chk_service_Open_ssl.sh"
+    dest: "/usr/local/chk_service_Open_ssl.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /usr/local/chk_service_Open_ssl.sh
+  args:
+    chdir: "/usr/local"
+  register: chk_service_Open_ssl
+
+- debug:
+    var: chk_service_Open_ssl

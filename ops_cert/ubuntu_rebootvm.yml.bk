@@ -1,0 +1,9 @@
+---
+- hosts: dvbosuwkr05.curaspan.local
+  tasks:
+  - name: Reboot VM
+    command: reboot
+    register: reboot_result
+    retries: 10
+    delay: 5
+    until: reboot_result.rc == 0

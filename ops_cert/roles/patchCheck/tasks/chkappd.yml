@@ -1,0 +1,15 @@
+- name: upload Fireeyescript
+  copy:
+    src: "{{ role_path }}/files/small_chk_services.sh"
+    dest: "/usr/local/small_chk_services.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /usr/local/small_chk_services.sh appdynamics
+  args:
+    chdir: "/usr/local"
+  register: small_chk_services
+
+- debug:
+    var: small_chk_services

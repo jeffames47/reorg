@@ -1,0 +1,27 @@
+
+#health_check_url_enabled: true
+#    - support/health
+#    - support/info
+
+#verify_patientAggregation:
+#  name: patientAggregation
+#  servers:
+#    - http://p10ststream01.navihealth.local:7070/support
+#    - http://p10ststream02.navihealth.local:7070/support
+#  version: "{{ csiVersion }}"
+#  statusKey: "status"
+#  versionKey: "version"
+
+health_check_tomcat_enabled: false
+
+health_check_apache_enabled: false
+
+health_check_mnt_point_enabled: false
+
+health_check_url_enabled: true
+health_check_url:
+  patagg:
+    - http
+    - 7070
+    - support/health
+    - support/info

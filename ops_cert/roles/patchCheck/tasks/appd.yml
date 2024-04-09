@@ -1,0 +1,41 @@
+- name: create temp directory for appd
+  file:
+    path: /tmp/appd
+    state: directory
+
+- name: upload rpm packages
+  copy:
+    src: "/home/james/op/files/controller-info.xml"
+    dest: "/tmp/appd/controller-info.xml"
+    mode: "0755"
+    force: yes
+
+#- name: Copy RPM packages and control center XML 
+#  copy: src={{ /home/james/op/files/ }} dest={{ /tmp/appd/ }}
+#    with_together:
+#    - [ 'controller-info.xml', 'appdynamics-machine-agent-20.12.0.3016.x86_64.rpm' ]
+#    owner: root
+#    mode: "0755"
+#    force: yes
+#
+#- name: execute 
+#  shell: rpm -ivh appdynamics-machine-agent-20.12.0.3016.x86_64.rpm
+#  
+#- name: start appd agent
+#  shell: /etc/init.d/appdynamics-machine-agent start
+
+- name: upload manage engine script
+  copy:
+    src: "{{ role_path }}/files/appd.sh"
+    dest: "/tmp/appd.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/appd.sh
+  args:
+    chdir: "/tmp"
+  register: appd
+
+- debug:
+    var: appd

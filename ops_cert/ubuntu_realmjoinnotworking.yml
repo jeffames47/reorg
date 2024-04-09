@@ -1,0 +1,18 @@
+---
+- hosts: all
+  tasks:
+    - name: Join the domain using realm
+      command: realm join ad.curaspan.local --user=svc_ubunturealm --stdin-password
+      become: true
+      register: realm_join
+    - name: Check if realm join was successful
+      assert:
+        that:
+          - realm_join.rc == 0
+          - realm_join.stdout == ""
+          - not realm_join.stderr
+      when: realm_join.rc != 0
+    - debug:
+        msg: "Successfully joined the domain ad.curaspan.local."
+      when: realm_join.rc == 0
+

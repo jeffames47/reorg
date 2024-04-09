@@ -1,0 +1,37 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Fri Jul 10 15:39:09 EST 2020
+
+#- hosts: "{{envVar}}:&{{applicationVar}}"
+#  gather_facts: true
+#  become: yes
+#  pre_tasks:
+#    - name: Include all main.yaml file for the ENV
+#      include_vars: "vars/{{envVar}}/main.yml"
+#    - name: Include file for the Env/Application
+#      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+#  tasks:
+
+
+- hosts: all
+  gather_facts: true
+  become: yes
+  tasks:
+
+#check tomcat 
+
+    - copy:
+        src: "{{playbook_dir}}/files/appdynamics-machine-agent-6"
+        dest: /tmp/appdynamics-machine-agent.service-6
+
+    - copy:
+        src: "{{playbook_dir}}/files/appdynamics-machine-agent-7"
+        dest: /tmp/appdynamics-machine-agent.service-7
+
+    - import_role:
+       name: patchCheck
+       tasks_from: fix_appd
+
+#    - import_role:
+#       name: patchCheck
+#       tasks_from: chk_service_appd
+

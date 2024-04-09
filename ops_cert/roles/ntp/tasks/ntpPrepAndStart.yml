@@ -1,0 +1,21 @@
+- name: Create directory /tmp/LINUX
+  file:
+    path: /tmp/LINUX
+    state: directory
+
+- name: upload ntpPrepAndStart.yml
+  copy:
+    src: "{{ role_path }}/files/ntpPrepAndStart.sh"
+    dest: "/tmp/LINUX/ntpPrepAndStart.sh"
+    mode: "0755"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/LINUX/ntpPrepAndStart.sh
+  args:
+    chdir: "/tmp/LINUX"
+  register: ntpPrepAndStart
+
+- debug:
+    var: ntpPrepAndStart
+

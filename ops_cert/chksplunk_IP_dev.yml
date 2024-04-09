@@ -1,0 +1,31 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Wed Nov  2 16:51:51 EST 2022
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: false
+  become: yes
+#  pre_tasks:
+#    - name: Include all main.yaml file for the ENV
+#      include_vars: "vars/{{envVar}}/main.yml"
+#    - name: Include file for the Env/Application
+#      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+    - import_role:
+       name: patchCheck
+       tasks_from: chksplunk_IP_dev.yml
+
+    - name:
+      shell: rm -f /tmp/chksplunk_IP_dev.sh
+      args:
+        warn: no
+
+    - name:
+      shell: rm -f /tmp/chksplunk_IP_dev.sh 
+      args:
+        warn: no
+
+    - name: remove junk
+      shell: rm -f /tmp/tmp_status* 
+      args:
+        warn: no
+

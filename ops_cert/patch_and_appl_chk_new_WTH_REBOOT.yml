@@ -1,0 +1,171 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Thu Jul  6 12:55:01 EST 2023
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: false
+#  gather_facts: true
+  become: yes
+#  pre_tasks:
+#    - name: Include all main.yaml file for the ENV
+#      include_vars: "vars/{{envVar}}/main.yml"
+#    - name: Include file for the Env/Application
+#      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+#    - import_role:
+#        name: f5
+#        tasks_from: getF5Info
+#      when: envVar in ['Env_SG','Env_PR']
+#    - import_role:
+#        name: healthCheck
+    - name: remove yum_save_tx.*
+      shell: rm -rf /tmp/yum_save_tx.*
+      args:
+        warn: no
+#
+    - name: remove  initramfs*dump.img
+      shell: rm -rf rm /boot/initramfs-*dump.img
+      args:
+        warn: no
+#
+##    - name: remove old kernel
+##      shell: yum remove kernel-3.10.0-957.el7.x86_64
+##      args:
+##        warn: no
+##
+#    - name: clean kernel
+#      shell: package-cleanup --oldkernels --count=2 -y
+#      args:
+#        warn: no
+#
+#    - name: messages
+#      shell: echo " " > /var/log/dmesg
+#      args:
+#        warn: no
+#
+#    - name: messages
+#      shell: echo " " > /var/log/daemon.log
+#      args:
+#        warn: no
+#
+#    - name: kern.log
+#      shell: echo " " > /var/log/kern.log
+#      args:
+#        warn: no
+
+#    - name: messages
+#      shell: echo " " > /var/log/messages
+#      args:
+#        warn: no
+
+    - name: remove /var/cache/yum/
+      shell: rm -rf /var/cache/yum/
+      args:
+        warn: no
+
+#    - name: remove cron-
+#      shell: rm -f /var/log/cron-*
+#      args:
+#        warn: no
+
+#    - name: remove maillog-
+#      shell: rm -f /var/log/maillog-*
+#      args:
+#        warn: no
+#
+#    - name: remove messages-
+#      shell: rm -f /var/log/messages-*
+#      args:
+#        warn: no
+
+    - include_role:
+        name: patchCheck
+        tasks_from: "{{ item }}"
+      with_items:
+        - prePatchInfo
+##        - before
+##        - spaceCheck
+##        - chgNic
+##    - import_role:
+##        name: vcenter
+##        tasks_from: createSnapshot.yml
+    - import_role:
+       name: patchCheck
+       tasks_from: before
+#    - import_role:
+#        name: f5
+#        tasks_from: disableAllF5
+#      when: envVar in ['Env_SG','Env_PR']
+
+##    - reboot:
+
+##    - import_role:
+##        name: nic
+##        tasks_from: ifup
+##      vars:
+##        waitForTimeout: 120
+##    - name: Wait 60 seconds, but only start checking after 120 seconds
+##      wait_for_connection:
+##        delay: 60
+##        timeout: 120
+    - name: remove all repo2
+      shell: rm -f /etc/yum.repos.d/*
+      args:
+        warn: no
+    - copy:
+        src: "{{playbook_dir}}/files/centos7-repo"
+#        src: "{{playbook_dir}}/files/centos{{ ansible_distribution_version[0] }}-repo"
+        dest: /etc/yum.repos.d/CentOS-Base.repo
+    - name: backup java cacerts
+      shell: cp -pf /etc/pki/ca-trust/extracted/java/cacerts /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatching
+      args:
+        removes: /etc/pki/ca-trust/extracted/java/cacerts
+    - import_role:
+        name: patchCheck
+        tasks_from: patchIt
+    - name: restore java cacerts
+      shell: cp -pf /etc/pki/ca-trust/extracted/java/cacerts /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatchNew; mv -f /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatching /etc/pki/ca-trust/extracted/java/cacerts
+      args:
+        removes: /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatching
+
+    - reboot:
+
+#    - import_role:
+#        name: nic
+#        tasks_from: ifup
+#      vars:
+#        waitForTimeout: 120
+    - import_role:
+        name: patchCheck
+        tasks_from: after
+#    - pause:
+#        seconds: "{{ postHealthCheckWait | default(100) }}"
+#    - import_role:
+#        name: healthCheck
+#    - when: healthCheckHasError
+#      import_role:
+#        name: slack
+#      vars:
+#        slack_color: danger
+#        slack_msg: "Health check failed {{envVar | default('')}} {{applicationVar | default('')}}, please fix the errors. Remember to enable f5 if needed."
+#      delegate_to: localhost
+#      run_once: true
+#    - when: healthCheckHasError
+#      fail:
+#        msg: "Health check failed."
+#    - import_role:
+#        name: f5
+#        tasks_from: enableAllF5
+#      when: envVar in ['Env_SG','Env_PR'] and not healthCheckHasError
+#
+#    - shell: cat /etc/redhat-release
+#      register: osVersion
+#
+#    - import_role:
+#        name: vcenter
+#        tasks_from: createAttribute
+#      vars:
+#        vcenterAttributeArray:
+#          - name: lastUpdatedTime
+#            value: "{{ lookup('pipe','date') }}"
+#          - name: osVersion
+##            value: "{{ osVersion.stdout }}"

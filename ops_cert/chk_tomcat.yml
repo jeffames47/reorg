@@ -1,0 +1,31 @@
+# Last modified: /2/23
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+#  pre_tasks:
+#    - name: Include all main.yaml file for the ENV
+#      include_vars: "vars/{{envVar}}/main.yml"
+#    - name: Include file for the Env/Application
+#      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+    - import_role:
+        name: patchCheck
+        tasks_from: chk_tomcat.yml
+#    - name:
+#      shell: rm -f /tmp/chk_tomcat.sh
+#      args:
+#        warn: no
+    - name:
+      shell: rm -f /tmp/tmp_status*
+      args:
+        warn: no

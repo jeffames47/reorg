@@ -1,0 +1,17 @@
+bosVcenter:
+  datacenter: BOS
+  host: "waldevvctr01.navidev.local"
+  username: "navidev.local\\terraform"
+  password: "Mwyf8rgDYAvTCe8k!@#$"
+
+iadVcenter:
+  datacenter: IAD
+  host: "va-vm-vctr-01.curaspan.local"
+  username: "navihealth.local\\terraform"
+  password: "Mwyf8rgDYAvTCe8k!@#$"
+
+bnaVcenter:
+  datacenter: BNA
+  host: "p10-vctr-01.navihealth.local"
+  username: "navihealth.local\\terraform"
+  password: "Mwyf8rgDYAvTCe8k!@#$"

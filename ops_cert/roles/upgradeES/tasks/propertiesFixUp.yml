@@ -1,0 +1,14 @@
+
+- name: "read {{ service.configPath }}"
+  shell: "cat {{ service.configPath }}"
+  register: propertiesFileContent
+
+- name: append new property to properties file
+  lineinfile:
+    path: "{{ service.configPath }}"
+    line: "{{ lineUpdate }}"
+    insertbefore: EOF
+  when: lineUpdate not in propertiesFileContent.stdout_lines
+  with_items: "{{ service.propertyUpdates }}"
+  loop_control:
+    loop_var: lineUpdate

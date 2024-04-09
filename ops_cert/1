@@ -1,0 +1,76 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Thu Jul  6 12:55:01 EST 2023
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: false
+#  gather_facts: true
+  become: yes
+  tasks:
+
+#    - name:  mkdir /opt/openssl
+#      shell: mkdir /opt/openssl 
+#      args:
+#        warn: no
+#    - name:  mkdir /opt/openssl/bin
+#      shell: mkdir /opt/openssl/bin 
+#      args:
+#        warn: no
+#    - name: cd /opt/openssl
+#      shell: cd /opt/openssl 
+#      args:
+#        warn: no
+ 
+#    - name: wget
+#      shell: wget https://www.openssl.org/source/openssl-3.2.0.tar.gz
+#      args:
+#        warn: no
+
+#    - name: tar 
+#      shell: tar -xf openssl-3.2.0.tar.gz
+#      args:
+#        warn: no
+
+#    - name: cd openssl-3.2.0
+#      shell: cd openssl-3.2.0
+#      args:
+#        warn: no
+
+#    - name:  yum install perl-IPC-Cmd -y
+#      shell: yum install perl-IPC-Cmd -y
+#      args:
+#        warn: no
+
+    - name: ./config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl
+      shell: ./config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl
+      args:
+        warn: no
+
+    - name: yum install gcc -y
+      shell: yum install gcc -y
+      args:
+        warn: no
+
+    - name: make
+      shell: make
+      args:
+        warn: no
+
+    - name: make install
+      shell: make install
+      args:
+        warn: no
+
+    - name: echo "/usr/local/openssl/lib" > /etc/ld.so.conf.d/openssl.conf
+      shell: echo "/usr/local/openssl/lib" > /etc/ld.so.conf.d/openssl.conf
+      args:
+        warn: no
+
+    - name: ldconfig
+      shell: ldconfig
+      args:
+        warn: no
+
+    - name: /usr/local/openssl/bin/openssl version
+      shell: /usr/local/openssl/bin/openssl version
+      args:
+        warn: no

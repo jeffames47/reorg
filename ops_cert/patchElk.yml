@@ -1,0 +1,107 @@
+- hosts: "{{ hostVar | default('dev') }}"
+  gather_facts: true
+  become: yes
+  tasks:
+    - run_once: true
+      become: no
+      ignore_errors: yes
+      block:
+        - name: disable shard allocation
+          uri:
+            url: "https://{{elasticUrl}}:9200/_cluster/settings"
+            user: "{{ elasticUsername | default('') }}"
+            password: "{{ elasticPassword | default('') }}"
+            method: PUT
+            body: "{{ disableShardPayload | to_json }}"
+            validate_certs: false
+            body_format: json
+          vars:
+            disableShardPayload:
+              persistent:
+                cluster.routing.allocation.enable: primaries
+        - name: stop indexing and perform a synced flush
+          uri:
+            url: "https://{{elasticUrl}}:9200/_flush/synced"
+            user: "{{ elasticUsername | default('') }}"
+            password: "{{ elasticPassword | default('') }}"
+            validate_certs: false
+            method: POST
+    - include_role:
+        name: vcenter
+        tasks_from: "{{ item }}"
+      with_items:
+        - poweroffVM
+        - createSnapshot
+        - poweronVM
+    - wait_for_connection:
+        timeout: 120
+    - include_role:
+        name: patchCheck
+        tasks_from: "{{ item }}"
+      with_items:
+        - prePatchInfo
+        - before
+        - spaceCheck
+        - chgNic
+    - import_role:
+        name: nic
+        tasks_from: ifup
+    - name: remove all repo2
+      shell: rm -f /etc/yum.repos.d/*
+    - copy:
+        src: "{{playbook_dir}}/files/centos{{ ansible_distribution_version[0] }}-repo"
+        dest: /etc/yum.repos.d/CentOS-Base.repo
+    - name: backup java cacerts
+      shell: cp -pf /etc/pki/ca-trust/extracted/java/cacerts /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatching
+      args:
+        removes: /etc/pki/ca-trust/extracted/java/cacerts
+    - import_role:
+        name: patchCheck
+        tasks_from: patchIt
+    - name: restore java cacerts
+      shell: cp -pf /etc/pki/ca-trust/extracted/java/cacerts /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatchNew; mv -f /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatching /etc/pki/ca-trust/extracted/java/cacerts
+      args:
+        removes: /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatching
+    - reboot:
+    - import_role:
+        name: nic
+        tasks_from: ifup
+      vars:
+        waitForTimeout: 120
+    - import_role:
+        name: patchCheck
+        tasks_from: after
+    - run_once: true
+      become: no
+      block:
+        - uri:
+            url: "https://{{elasticUrl}}:9200/_cluster/health"
+            user: "{{ elasticUsername | default('') }}"
+            password: "{{ elasticPassword | default('') }}"
+            method: GET
+            return_content: yes
+            validate_certs: false
+          register: clusterHealth
+          until: clusterHealth.json.status in ['yellow','green']
+          retries: 60
+          delay: 10
+        - name: enable shard allocation
+          uri:
+            url: "https://{{elasticUrl}}:9200/_cluster/settings"
+            user: "{{ elasticUsername | default('') }}"
+            password: "{{ elasticPassword | default('') }}"
+            method: PUT
+            body: "{{ enableShardPayload | to_json }}"
+            validate_certs: false
+            body_format: json
+          vars:
+            enableShardPayload:
+              persistent:
+                cluster.routing.allocation.enable: null
+    - import_role:
+        name: vcenter
+        tasks_from: createAttribute
+      vars:
+        vcenterAttributeArray:
+          - name: lastUpdatedTime
+            value: "{{ lookup('pipe','date') }}"

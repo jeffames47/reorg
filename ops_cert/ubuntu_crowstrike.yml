@@ -1,0 +1,19 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Copy Falcon Sensor DEB file to remote machine
+    copy:
+#      src: /home/james/ops_cert/files/falcon-sensor_6.46.0-14306_amd64.deb
+      src: /home/james/ops_cert/files/falcon-sensor_7.07.0-16206_amd64.deb
+      dest: /tmp/falcon-sensor.deb
+  - name: Install CrowdStrike Falcon Sensor
+    apt:
+      deb: /tmp/falcon-sensor.deb
+      state: present
+  - name: Set the CrowdStrike CID
+    command: /opt/CrowdStrike/falconctl -s --cid=D6887CAD408C480081695F1D9ED93B82-CB
+  - name: Restart the CrowdStrike Falcon Sensor service
+    service:
+      name: falcon-sensor
+      state: restarted

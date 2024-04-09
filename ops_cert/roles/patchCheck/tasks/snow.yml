@@ -1,0 +1,15 @@
+- name: upload snow script
+  copy:
+    src: "{{ role_path }}/files/snow.sh"
+    dest: "/usr/local/snow.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /usr/local/snow.sh
+  args:
+    chdir: "/usr/local"
+  register: snow
+
+- debug:
+    var: snow

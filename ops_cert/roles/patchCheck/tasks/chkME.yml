@@ -1,0 +1,16 @@
+- name: upload manage engine restart script
+  copy:
+    src: "{{ role_path }}/files/chkME.sh"
+    dest: "/tmp/chkME.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/chkME.sh
+  args:
+    chdir: "/tmp"
+  register: chkME
+
+- debug:
+    var: chkME
+

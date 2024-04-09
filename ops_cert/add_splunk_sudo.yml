@@ -1,0 +1,51 @@
+# This playbook will: import root cert and make a backup
+# Last modified: Tue Sep 13 09:57:37 EST 2022
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+
+    - name:
+      shell: echo "splunk    ALL=(ALL) ALL" >> /etc/sudoers 2> /dev/null
+      args:
+        warn: no
+#    - name:
+#      shell: echo "%sudo-devops ALL=(ALL) ALL" >> /etc/sudoers 2> /dev/null
+#      args:
+#        warn: no
+#
+#    - name:
+#      shell: echo "%sudo-dev ALL=(ALL) ALL" >> /etc/sudoers 2> /dev/null
+#      args:
+#        warn: no
+#
+#    - name:
+#      shell: echo "%sudo-qa ALL=(ALL) ALL" >> /etc/sudoers 2> /dev/null
+#      args:
+#        warn: no
+#
+#    - name:
+#      shell: echo "%sudo-stg ALL=(ALL) ALL" >> /etc/sudoers 2> /dev/null
+#      args:
+#        warn: no
+#
+#    - name:
+#      shell: echo "%netadmin  ALL=(ALL) ALL" >> /etc/sudoers 2> /dev/null
+#      args:
+#        warn: no
+
+#    - name:
+#      shell: echo "james    ALL=(ALL) ALL" >> /etc/sudoers 2> /dev/null
+#      args:
+#        warn: no
+#
+#    - name:
+#      shell: echo "jeffrey.ames    ALL=(ALL) ALL" >> /etc/sudoers 2> /dev/null
+#      args:
+#        warn: no

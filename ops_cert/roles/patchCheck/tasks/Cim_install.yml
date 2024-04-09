@@ -1,0 +1,25 @@
+- name: Create directory /tmp/LINUX
+  file:
+    path: /tmp/LINUX
+    state: directory
+
+#- name: upload LINUX
+#  copy:
+#    src: "{{ role_path }}/files"
+#    dest: "/tmp"
+
+#- name: upload cert_install.sh
+#  copy:
+#    src: "{{ role_path }}/files/cert_install.sh"
+#    dest: "/tmp/cert_install.sh"
+#    mode: "0755"
+#    force: yes
+
+- name: execute
+  shell: sh /tmp/LINUX/cert_install.sh
+  args:
+    chdir: "/tmp/LINUX"
+  register: Cim_install
+
+- debug:
+    var: Cim_install

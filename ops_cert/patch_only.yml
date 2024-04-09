@@ -1,0 +1,145 @@
+# This playbook will: perform a patch only
+# Last modified: Mon May 11 09:36:29 CDT 2020
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+    - import_role:
+        name: f5
+        tasks_from: getF5Info
+      when: envVar in ['Env_SG','Env_PR']
+#    - import_role:
+#        name: healthCheck
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  serial: "{{ (halfBatchVar | default('false') == 'true') | ternary('50%', '100%') }}"
+  become: yes
+  pre_tasks:
+    - name: Include all main.yml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+    - import_role:
+        name: f5
+        tasks_from: disableAllF5
+      when: envVar in ['Env_SG','Env_PR']
+    - import_role:
+        name: vcenter
+        tasks_from: poweroffVM.yml
+    - import_role:
+        name: vcenter
+        tasks_from: createSnapshot.yml
+    - import_role:
+        name: vcenter
+        tasks_from: poweronVM.yml
+    - name: Wait 30 seconds, but only start checking after 30 seconds
+      wait_for_connection:
+        delay: 30
+        timeout: 30
+    - import_role:
+        name: patchCheck
+        tasks_from: prePatchInfo
+    - import_role:
+        name: patchCheck
+        tasks_from: before
+    - import_role:
+        name: patchCheck
+        tasks_from: spaceCheck
+    - import_role:
+        name: patchCheck
+        tasks_from: chgNic
+    - import_role:
+        name: patchCheck
+        tasks_from: addAnsibleUser
+    - import_role:
+        name: nic
+        tasks_from: ifup.yml
+    - name: remove all repo
+      shell: yum remove katello-ca-consumer -y
+      args:
+        warn: no
+    - name: remove all katello-ca-consumer-mavin-katello-01.curaspan.local-1.0-1.noarch
+      shell: yum remove katello-ca-consumer-mavin-katello-01.curaspan.local-1.0-1.noarch -y
+      args:
+        warn: no
+    - name: remove subscription-manager
+      shell: yum remove *subscription-manager -y
+      args:
+        warn: no
+    - name: remove all repo2
+      shell: rm -f /etc/yum.repos.d/* 
+      args:
+        warn: no
+    - copy:
+        src: "{{playbook_dir}}/files/centos{{ ansible_distribution_version[0] }}-repo"
+        dest: /etc/yum.repos.d/CentOS-Base.repo
+
+    - name: Wait 10 seconds, but only start checking after 10 seconds
+      wait_for_connection:
+        delay: 10
+        timeout: 10
+
+    - name: do yum prep stuff 1 makecache etc 
+      shell: yum makecache fast; sleep 3; yum clean all; sleep 3
+      args:
+        warn: no
+    - name: do yum prep stuff 2 then yum update 
+      shell: yum clean metadata; sleep 3; yum clean all
+      args:
+        warn: no
+    - name: do yum prep stuff 3 then yum update 
+      shell: sleep 3; yum update -y
+      args:
+        warn: no
+
+    - reboot:
+
+    - import_role:
+        name: nic
+        tasks_from: ifup.yml
+      vars:
+        waitForTimeout: 180
+#        waitForTimeout: 360
+    - import_role:
+        name: patchCheck
+        tasks_from: after
+#    - pause:
+#        seconds: "{{ postHealthCheckWait | default(600) }}"
+#    - import_role:
+#        name: healthCheck
+#    - when: healthCheckHasError
+#      import_role:
+#        name: slack
+#      vars:
+#        slack_color: danger
+#        slack_msg: "Health check failed {{envVar | default('')}} {{applicationVar | default('')}}, please fix the errors. Remember to enable f5 if needed."
+#      delegate_to: localhost
+#      run_once: true
+#    - when: healthCheckHasError
+#      fail:
+#        msg: "Health check failed."
+#    - import_role:
+#        name: f5
+#        tasks_from: enableAllF5
+#      when: envVar in ['Env_SG','Env_PR'] and not healthCheckHasError
+#    - shell: cat /etc/redhat-release
+#       register: osVersion
+#    - import_role:
+#        name: vcenter
+#        tasks_from: createAttribute
+#      vars:
+#        vcenterAttributeArray:
+#          - name: lastUpdatedTime
+#            value: "{{ lookup('pipe','date') }}"
+#          - name: osVersion
+#            value: "{{ osVersion.stdout }}"
+    - import_role:
+        name: patchCheck
+        tasks_from: patchIt.yml

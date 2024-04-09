@@ -1,0 +1,15 @@
+- name: upload tanium script
+  copy:
+    src: "{{ role_path }}/files/chk_servicesTanium.sh"
+    dest: "/tmp/chk_servicesTanium.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/chk_servicesTanium.sh Tanium
+  args:
+    chdir: "/tmp"
+  register: chk_servicesTanium
+
+- debug:
+    var: chk_servicesTanium

@@ -1,0 +1,36 @@
+# This playbook will: remove a snapshot
+# Last modified: Mon Jun 15 16:40:38 EDT 2020
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+    - import_role:
+        name: vcenter
+        tasks_from: removeSnapshot.yml
+
+#- name: Remove a snapshot
+#  vmware_guest_snapshot:
+#    hostname: "{{ vcenter_hostname }}"
+#    username: "{{ vcenter_username }}"
+#    password: "{{ vcenter_password }}"
+#    datacenter: "{{ datacenter_name }}"
+#    folder: "/{{ datacenter_name }}/vm/"
+#    name: "{{ guest_name }}"
+#    state: absent
+#    snapshot_name: snap1
+#  delegate_to: localhost

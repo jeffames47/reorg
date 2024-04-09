@@ -1,0 +1,20 @@
+- name: Create directory /tmp/patchCheck
+  file:
+    path: /tmp/patchCheck
+    state: directory
+
+- name: upload prePatchPrep.sh
+  copy:
+    src: "{{ role_path }}/files/prePatchPrep.sh"
+    dest: "/tmp/patchCheck/prePatchPrep.sh"
+    mode: "0755"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/patchCheck/prePatchPrep.sh
+  args:
+    chdir: "/tmp/patchCheck"
+  register: prePatchPrep
+
+- debug:
+    var: prePatchPrep

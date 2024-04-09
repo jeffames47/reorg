@@ -1,0 +1,61 @@
+- hosts: "{{ hostVar | default('dev') }}"
+  gather_facts: true
+  become: yes
+  tasks:
+    - include_role:
+        name: upgradeES
+        tasks_from: preUpgrade
+    - include_role:
+        name: vcenter
+        tasks_from: "{{ item }}"
+      with_items:
+        - poweroffVM
+        - createSnapshot
+        - poweronVM
+    - wait_for_connection:
+        timeout: 120
+    - include_role:
+        name: patchCheck
+        tasks_from: "{{ item }}"
+      with_items:
+        - prePatchInfo
+        - before
+        - spaceCheck
+        - chgNic
+    - import_role:
+        name: nic
+        tasks_from: ifup
+    - import_role:
+        name: upgradeES
+    - name: remove all repo2
+      shell: rm -f /etc/yum.repos.d/*
+    - copy:
+        src: "{{playbook_dir}}/files/centos{{ ansible_distribution_version[0] }}-repo"
+        dest: /etc/yum.repos.d/CentOS-Base.repo
+    - name: backup java cacerts
+      shell: cp -pf /etc/pki/ca-trust/extracted/java/cacerts /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatching
+      args:
+        removes: /etc/pki/ca-trust/extracted/java/cacerts
+    - import_role:
+        name: patchCheck
+        tasks_from: patchIt
+    - name: restore java cacerts
+      shell: cp -pf /etc/pki/ca-trust/extracted/java/cacerts /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatchNew; mv -f /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatching /etc/pki/ca-trust/extracted/java/cacerts
+      args:
+        removes: /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatching
+    - reboot:
+    - import_role:
+        name: nic
+        tasks_from: ifup
+      vars:
+        waitForTimeout: 120
+    - import_role:
+        name: patchCheck
+        tasks_from: after
+    - import_role:
+        name: vcenter
+        tasks_from: createAttribute
+      vars:
+        vcenterAttributeArray:
+          - name: lastUpdatedTime
+            value: "{{ lookup('pipe','date') }}"

@@ -1,0 +1,30 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Create the OpenSSL configuration directory
+    file:
+      path: /etc/openssl/
+      state: directory
+  - name: Touch the OpenSSL configuration file
+    file:
+      path: /etc/openssl/openssl.cnf
+      state: touch
+  - name: Copy Nessus Agent DEB file to remote machine
+    copy:
+      src: /home/james/ops_cert/files/NessusAgent-10.1.1-ubuntu1110_amd64.deb
+      dest: /tmp/nessusagent.deb
+  - name: Install Nessus Agent
+    apt:
+      deb: /tmp/nessusagent.deb
+      state: present
+  - name: Set the Nessus agent key (part 1)
+    register: nessus_agent_key_output
+    command: "curl -H 'X-Key: 18187a2362968d8e18a288eb4c23703d8fb71d5b00b08b0db1f0adca27b653d1' 'https://cloud.tenable.com/install/agent?groups=CTP'"
+  - name: Set the Nessus agent key (part 2)
+    command: "/opt/nessus_agent/sbin/nessuscli agent link --key=18187a2362968d8e18a288eb4c23703d8fb71d5b00b08b0db1f0adca27b653d1 --cloud --groups=CTP"
+  - name: Restart the Nessus agent service
+    service:
+      name: nessusagent
+      state: restarted
+

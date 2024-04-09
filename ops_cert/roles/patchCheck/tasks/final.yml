@@ -1,0 +1,17 @@
+- name: upload patchCheckScript
+  copy:
+    src: "{{ role_path }}/files/patchCheck.sh"
+    dest: "/tmp/patchCheck.sh"
+    #dest: "/tmp/patchCheck/patchCheck.sh"
+    mode: "0755"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/patchCheck.sh FINAL
+  #shell: sh /tmp/patchCheck/patchCheck.sh AF
+  args:
+    chdir: "/tmp"
+  register: patchCheckAfter
+
+- debug:
+    var: patchCheckAfter

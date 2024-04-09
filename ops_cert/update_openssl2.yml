@@ -1,0 +1,49 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Thu Jul  6 12:55:01 EST 2023
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: false
+#  gather_facts: true
+  become: yes
+  tasks:
+
+
+    - name: cd /opt/openssl/openssl-3.2.0
+      shell: cd /opt/openssl/openssl-3.2.0
+      args:
+        warn: no
+
+    - name: sh config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl
+      shell: cd /opt/openssl ; ./config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl
+      args:
+        warn: no
+
+    - name: yum install gcc -y
+      shell: yum install gcc -y
+      args:
+        warn: no
+
+    - name: make
+      shell: make
+      args:
+        warn: no
+
+    - name: make install
+      shell: make install
+      args:
+        warn: no
+
+    - name: echo "/usr/local/openssl/lib" > /etc/ld.so.conf.d/openssl.conf
+      shell: echo "/usr/local/openssl/lib" > /etc/ld.so.conf.d/openssl.conf
+      args:
+        warn: no
+
+    - name: ldconfig
+      shell: ldconfig
+      args:
+        warn: no
+
+    - name: /usr/local/openssl/bin/openssl version
+      shell: /usr/local/openssl/bin/openssl version
+      args:
+        warn: no

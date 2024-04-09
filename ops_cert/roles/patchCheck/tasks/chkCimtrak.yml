@@ -1,0 +1,17 @@
+- name: upload 
+  copy:
+    src: "{{ role_path }}/files/small_chk_services.sh"
+##    src: "{{ role_path }}/files/chkCimtrak.sh"
+    dest: "/usr/local/small_chk_services.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+###  shell: sh /usr/local/chkCimtrak.sh Cim
+  shell: sh /usr/local/small_chk_services.sh Cim
+  args:
+    chdir: "/usr/local"
+  register: chkCimtrak
+
+- debug:
+    var: chkCimtrak

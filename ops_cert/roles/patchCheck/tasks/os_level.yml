@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/os_level.sh"
+    dest: "/tmp/os_level.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/os_level.sh
+  args:
+    chdir: "/tmp"
+  register: os_level 
+
+- debug:
+    var: os_level

@@ -1,0 +1,15 @@
+- name: upload Fireeyescript
+  copy:
+    src: "{{ role_path }}/files/chk_services_Fireeye.sh"
+    dest: "/usr/local/chk_services_Fireeye.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /usr/local/chk_services_Fireeye.sh
+  args:
+    chdir: "/usr/local"
+  register: chk_services_Fireeye
+
+- debug:
+    var: chk_services_Fireeye

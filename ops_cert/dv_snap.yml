@@ -1,0 +1,47 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Tue Jul 13 10:40:09 EDT 2020
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+#  pre_tasks:
+#    - name: Include all main.yaml file for the ENV
+#      include_vars: "vars/{{envVar}}/main.yml"
+#    - name: Include file for the Env/Application
+#      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+    - import_role:
+        name: f5
+        tasks_from: getF5Info
+      when: envVar in ['Env_SG','Env_PR']
+#    - import_role:
+#        name: healthCheck
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  serial: "{{ (halfBatchVar | default('false') == 'true') | ternary('50%', '100%') }}"
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+#    - import_role:
+#        name: f5
+#        tasks_from: disableAllF5
+#      when: envVar in ['Env_SG','Env_PR']
+#    - import_role:
+#        name: vcenter
+#        tasks_from: poweroffVM.yml
+#    - include_role:
+#        name: patchCheck
+#        tasks_from: "{{ item }}"
+#      with_items:
+#        - prePatchInfo
+#        - before
+#        - spaceCheck
+#        - chgNic
+    - import_role:
+        name: vcenter
+        tasks_from: dvcreateSnapshot.yml

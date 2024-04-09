@@ -1,0 +1,23 @@
+# This playbook will: install cimtrack 
+# Last modified:  Mon Jan 25 08:48:42 CST 2021
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  tasks:
+    - import_role:
+        name: patchCheck
+        tasks_from: cim_before
+    - import_role:
+        name: patchCheck
+        tasks_from: installCim
+
+    - name: run cimtrak
+      shell: ./ctagent_e_setup_linux_x64_04002000_17139_20200728.run --mode unattended --prefix /opt/Cimcor/CimTrak  --repository PRBNAWFIM01.navihealth.local --port 3749 --user cimtrak_installer --password '!nstall2020'
+      args:
+        chdir: "/tmp/LINUX"
+
+    - name: remove and cleanup everything
+      shell: rm -rf /tmp/LINUX/
+      args:
+        warn: no

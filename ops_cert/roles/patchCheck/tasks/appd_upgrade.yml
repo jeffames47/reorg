@@ -1,0 +1,21 @@
+#- name: create temp directory for appd
+#  file:
+#    path: /tmp/appd
+#    state: directory
+
+- name: upload appd script
+  copy:
+    src: "{{ role_path }}/files/appd_upgrade.sh"
+    dest: "/tmp/appd_upgrade.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/appd_upgrade.sh
+  args:
+    chdir: "/tmp"
+  register: appd_upgrade
+
+- debug:
+    var: appd_upgrade
+

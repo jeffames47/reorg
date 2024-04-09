@@ -1,0 +1,79 @@
+# This playbook will: import root cert and make a backup
+# Last modified: Tue Sep 13 09:57:37 EST 2022
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+
+#    - import_role:
+#        name: vcenter
+#        tasks_from: dvcreateSnapshot.yml
+
+    - name:
+      shell: systemctl stop taniumclient
+      args:
+        warn: no
+
+    - name:
+      shell: systemctl disable taniumclient
+      args:
+        warn: no
+
+    - name:
+      shell: rm -rf /opt/Tanium
+      args:
+        warn: no
+
+    - import_role:
+        name: patchCheck
+        tasks_from: removeTanium.yml
+
+    - name:
+      shell: rm -f /usr/local/removeTanium.sh
+      args:
+        warn: no
+
+    - import_role:
+        name: patchCheck
+        tasks_from: removeFireeye.yml
+
+    - import_role:
+        name: patchCheck
+        tasks_from: removeCimtrak.yml
+
+    - name:
+      shell: rm -f /tmp/removeCimtrak.sh
+      args:
+        warn: no
+
+    - import_role:
+        name: patchCheck
+        tasks_from: stopME.yml
+
+    - name:
+      shell: rm -f /usr/local/removeME.sh
+      args:
+        warn: no
+
+    - name: remove /opt/snow/NaviHealth/Linux/naviHealth_snowagent-sios-6.2.3-1.x86_64.rpm
+      shell: rm -rf /opt/snow/NaviHealth/Linux/naviHealth_snowagent-sios-6.2.3-1.x86_64.rpm
+      args:
+        warn: no
+    - name: remove opt/snow
+      shell: rm -rf /opt/snow
+      args:
+        warn: no
+    - name: remove /usr/local/snow.sh
+      shell: rm -rf /usr/local/snow.sh
+      args:
+        warn: no
+    - name: remove snow/NaviHealth.zip
+      shell: rm -rf /opt/snow/NaviHealth.zip
+      args:
+        warn: no

@@ -1,0 +1,66 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Tue Dec  1 11:09:09 EST 2020
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+#    - import_role:
+#        name: patchCheck
+#        tasks_from: Cim_install.yml
+
+#    - import_role:
+#        name: vcenter
+#        tasks_from: createSnapshot.yml
+
+    - import_role:
+        name: ntp
+        tasks_from: ntpPrepAndStart
+
+    - name: backup ntp.conf
+      shell: cp -pf /etc/ntp.conf /tmp/ntp.conf.bkup 
+#      args:
+#        removes: /etc/ntp.conf
+
+##    - name: install ntp if it is not there
+##      shell: yum install ntp
+#
+##    - name: enable ntp 
+##      shell: service ntpd enable
+##      shell: systemctl enable ntpd
+#
+    - copy:
+        src: "{{playbook_dir}}/files/ntp.conf"
+        dest: /etc/ntp.conf
+
+    - name:  ntpq -p
+      shell:  ntpq -p
+
+    - import_role: 
+       name: ntp
+       tasks_from: service_chk_and_restart
+
+    - name:  ntpq -p
+      shell:  ntpq -p
+#
+##    - name: Wait 2 seconds, but only start checking after 2 seconds
+##      wait_for_connection:
+##        delay: 2
+##        timeout: 2
+#
+##    - name:  /sbin/ntpq -p
+##      shell:  /sbin/ntpq -p
+#
+##    - name: ntpdate -q time1.curaspan.local time2.curaspan.local
+##      shell: ntpdate -q time1.curaspan.local time2.curaspan.local
+##
+##    - name: ntpdate -q va-dc-01.navihealth.local
+#
+#    - import_role:
+#       name: ntp
+#       tasks_from: ntpPrepAndStart_6_and_7

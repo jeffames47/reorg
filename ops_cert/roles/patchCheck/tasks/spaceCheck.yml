@@ -1,0 +1,20 @@
+- name: Create directory /tmp/patchCheck
+  file:
+    path: /tmp/patchCheck
+    state: directory
+
+- name: upload spaceCheck.sh
+  copy:
+    src: "{{ role_path }}/files/spaceCheck.sh"
+    dest: "/tmp/patchCheck/spaceCheck.sh"
+    mode: "0755"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/patchCheck/spaceCheck.sh
+  args:
+    chdir: "/tmp/patchCheck"
+  register: spaceCheck
+
+- debug:
+    var: spaceCheck

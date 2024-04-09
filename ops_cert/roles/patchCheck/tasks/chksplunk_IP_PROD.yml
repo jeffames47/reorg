@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/chksplunk_IP.sh"
+    dest: "/tmp/chksplunk_IP.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/chksplunk_IP.sh 172.20.100.201 PROD
+  args:
+    chdir: "/tmp"
+  register: chksplunk
+
+- debug:
+    var: chksplunk

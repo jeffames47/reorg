@@ -1,0 +1,15 @@
+- include_tasks: stopTomcat8AndClearCache.yml
+
+- include_tasks: deployWar.yml
+  when: app is defined
+
+- include_tasks: deployWar.yml
+  with_items: "{{ appList }}"
+  loop_control:
+    loop_var: app
+  when: appList is defined
+
+- include_tasks: startTomcat8.yml
+
+- when: not (noNeedToWaitForTomcat | default(false))
+  include_tasks: waitUntilTomcatStart.yml

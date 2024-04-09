@@ -1,0 +1,17 @@
+health_check_url_enabled: true
+health_check_url:
+  patientstore:
+    - https
+    - 443
+    - patientstore/services/heartbeat/test
+
+health_check_tomcat_enabled: true
+health_tomcat_port: 8080
+
+health_check_apache_enabled: true
+health_apache_port: 80
+
+health_check_mnt_point_enabled: true
+health_mnt_point:
+  - /mnt/auto/nas02/netops/env-tools/devnet
+  - /mnt/edisdocs

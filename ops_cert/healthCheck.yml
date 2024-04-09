@@ -1,0 +1,11 @@
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: false
+  become: no
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+    - import_role:
+        name: healthCheck

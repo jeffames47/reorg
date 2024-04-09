@@ -1,0 +1,8 @@
+- name: execute ctagent script
+  shell: yes | /tmp/LINUX/ctagent_e_setup_linux_x64_04002000_17139_20200728.run --unattendedmodeui minimal --prefix /opt/Cimcor/CimTrak --agentname dvbosljeffa01 --repository PRBNAWFIM01.navihealth.local --port 3749 --user cimtrak_installer --password '!nstall2020'
+  args:
+    chdir: "/tmp/LINUX"
+  register: Cim
+
+- debug:
+    var: Cim

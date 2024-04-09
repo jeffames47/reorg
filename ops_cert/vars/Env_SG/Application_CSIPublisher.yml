@@ -1,0 +1,24 @@
+health_check_url_enabled: true
+health_check_url:
+  orgagg:
+    - http
+    - 7080
+    - health
+    - info
+
+chk_tomcat_services: false
+
+#verify_csiDataPublisher:
+#  name: csiDataPublisher
+#  servers:
+#    - http://walsg-csipub-01.navidev.local:8080
+#  version: "{{ csiVersion }}"
+#  statusKey: "status"
+#  versionKey: "build.version"
+
+health_check_tomcat_enabled: false
+
+health_check_apache_enabled: false
+
+health_check_mnt_point_enabled: false
+

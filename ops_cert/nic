@@ -1,0 +1,20 @@
+# HWADDR=00:50:56:91:32:61
+NAME=ens192
+new-IPDNS1=10.10.55.11
+DNS2=172.20.55.145
+#DOMAIN="curaspan.local"
+DOMAIN="navidev.local curaspan.local"
+DEVICE=ens192
+ONBOOT=yes
+USERCTL=no
+BOOTPROTO=none
+IPADDR=10.10.120.199
+GATEWAY=10.10.120.1
+NETMASK=255.255.255.0
+PEERDNS=yes
+IPV6INIT=no
+IPV6_AUTOCONF=no
+
+check_link_down() {
+ return 1; 
+}

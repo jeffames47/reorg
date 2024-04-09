@@ -1,0 +1,15 @@
+- name: upload chk_nic.sh
+  copy:
+    src: "{{ role_path }}/files/chk_nic.sh"
+    dest: "/tmp/chk_nic.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/chk_nic.sh
+  args:
+    chdir: "/tmp"
+  register: chk_nic
+
+- debug:
+    var: chk_nic

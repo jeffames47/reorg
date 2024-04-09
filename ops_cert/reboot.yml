@@ -1,0 +1,26 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Mon Jul 13 10:13:05 EST 2020
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  serial: "{{ (halfBatchVar | default('false') == 'true') | ternary('50%', '100%') }}"
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+
+    - reboot:
+

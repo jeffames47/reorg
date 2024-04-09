@@ -1,0 +1,18 @@
+- hosts: all
+  gather_facts: false
+  become: yes
+  tasks:
+    - import_role:
+        name: healthCheck
+    - debug:
+        var: healthCheckHasError
+      delegate_to: localhost
+      run_once: true
+    - when: healthCheckHasError
+      include_role:
+        name: slack
+      vars:
+        slack_color: danger
+        slack_msg: "Health check failed {{envVar | default('')}} {{applicationVar | default('')}}, please fix the errors. Remember to enable f5 if needed."
+      delegate_to: localhost
+      run_once: true

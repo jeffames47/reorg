@@ -1,0 +1,58 @@
+# This playbook will: import root cert and make a backup
+# Last modified:  Thu Jun 10 13:11:22 EST 2021
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: false
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+#    - copy:
+#        src: "{{playbook_dir}}/files/yum.conf"
+#        dest: /etc/yum.conf
+
+#    - name: install yum util 
+#      shell: yum install yum-utils
+#      args:
+#        warn: no
+
+#    - name: restart 1
+#      shell: systemctl stop NessusAgent > /dev/null 
+#      args:
+#        warn: no
+
+#    - name: restart 2
+#      shell: /bin/systemctl stop nessusagent.service > /dev/null 
+#      args:
+#        warn: no
+
+    - name:
+      shell: systemctl stop falcon-sensor
+      args:
+        warn: no
+
+#    - name: remove command 2
+#      shell: rm -f /etc/machine_id
+#      args:
+#        warn: no
+
+#    - name: run link 
+#      shell: /opt/nessus_agent/sbin/nessuscli agent link --key=18187a2362968d8e18a288eb4c23703d8fb71d5b00b08b0db1f0adca27b653d1 --cloud --groups=CTP
+#      args:
+#        warn: no
+
+#    - name: restart 1
+#      shell: systemctl start NessusAgent
+#      args:
+#        warn: no
+
+#    - name: restart 2
+#      shell: /bin/systemctl start nessusagent.service
+#      args:
+#        warn: no
+
+#   systemctl start NessusAgent
+#   /bin/systemctl start nessusagent.service

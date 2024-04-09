@@ -1,0 +1,9 @@
+
+- name: execute
+  shell: sh /tmp/patchCheck/patchCheck.sh AF
+  args:
+    chdir: "/tmp/patchCheck"
+  register: patchCheckAfter
+
+- debug:
+    var: patchCheckAfter

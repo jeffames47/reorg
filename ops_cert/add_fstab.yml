@@ -1,0 +1,23 @@
+# This playbook will: import root cert and make a backup
+# Last modified:  Thu Jun 10 13:11:22 EST 2021
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+
+  tasks:
+
+    - name: add to fstab 
+      shell: if [[ $(cat /etc/fstab | grep va-vm-file-01 | grep /mnt/auto/home | grep san1) > 0 ]]; then echo "The fstab file contains the entry you need already."; else echo  "va-vm-file-01.curaspan.local:/mnt/san1/home  /mnt/auto/home  nfs  rw,bg,hard,vers=3,proto=tcp,timeo=600,rsize=32768,wsize=32768 0 0"   >>  /etc/fstab ; fi
+      args:
+        warn: no
+
+    - name: mount -a
+      shell: sudo -i mount -t nfs mount -a
+      args:
+        warn: no

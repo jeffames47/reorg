@@ -1,0 +1,60 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Thu Jul  6 12:55:01 EST 2023
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: false
+#  gather_facts: true
+  become: yes
+  tasks:
+
+#   clean up yum and space 
+
+#    - name: remove old kernel
+#      shell: yum remove kernel-3.10.0-957.el7.x86_64
+#      args:
+#        warn: no
+#
+#    - name: clean kernel
+#      shell: package-cleanup --oldkernels --count=2 -y
+#      args:
+#        warn: no
+#
+#    - name: messages
+#      shell: echo " " > /var/log/messages
+#      args:
+#        warn: no
+#
+#    - name: remove /var/cache/yum/
+#      shell: rm -rf /var/cache/yum/
+#      args:
+#        warn: no
+#
+#    - name: remove messages-
+#      shell: rm -f /var/log/messages-*
+#      args:
+#        warn: no
+
+#   edit this file vi roles/patchcheck/files/remove_java.sh
+
+    - import_role:
+       name: patchCheck
+       tasks_from: remove_java
+
+#    - import_role:
+#       name: patchCheck
+#       tasks_from: after
+
+    - name: remove script
+      shell: rm -f /tmp/remove_java.sh
+      args:
+        warn: no
+
+    - name: remove /tmp/yum_save_tx.2023
+      shell: rm -f /tmp/yum_save_tx.2023*
+      args:
+        warn: no
+
+    - name: remove rm -rf /tmp/ansible_command_payloa
+      shell: rm -rf /tmp/ansible_command_payload*
+      args:
+        warn: no

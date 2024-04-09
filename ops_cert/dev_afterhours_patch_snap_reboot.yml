@@ -1,0 +1,95 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Tue Jul 13 10:40:09 EDT 2020
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+#  pre_tasks:
+#    - name: Include all main.yaml file for the ENV
+#      include_vars: "vars/{{envVar}}/main.yml"
+#    - name: Include file for the Env/Application
+#      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+    - import_role:
+        name: f5
+        tasks_from: getF5Info
+      when: envVar in ['Env_SG','Env_PR']
+#    - import_role:
+#        name: healthCheck
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  serial: "{{ (halfBatchVar | default('false') == 'true') | ternary('50%', '100%') }}"
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+#    - import_role:
+#        name: f5
+#        tasks_from: disableAllF5
+#      when: envVar in ['Env_SG','Env_PR']
+#    - import_role:
+#        name: vcenter
+#        tasks_from: poweroffVM.yml
+    - include_role:
+        name: patchCheck
+        tasks_from: "{{ item }}"
+      with_items:
+        - prePatchInfo
+        - before
+#        - spaceCheck
+#        - chgNic
+    - import_role:
+        name: vcenter
+        tasks_from: dvcreateSnapshot.yml
+#    - import_role:
+#        name: vcenter
+#        tasks_from: poweronVM.yml
+#    - name: Wait 30 seconds, but only start checking after 60 seconds
+#      wait_for_connection:
+#        delay: 30
+#        timeout: 60
+#    - import_role:
+#        name: healthCheck
+#    - import_role:
+#        name: patchCheck
+#        tasks_from: chgNic
+#    - import_role:
+#        name: nic
+#        tasks_from: ifup
+#    - name: remove all repo2
+#      shell: rm -f /etc/yum.repos.d/*
+#      args:
+#        warn: no
+    - copy:
+        src: "{{playbook_dir}}/files/centos{{ ansible_distribution_version[0] }}-repo"
+        dest: /etc/yum.repos.d/CentOS-Base.repo
+    - name: backup java cacerts
+      shell: cp -pf /etc/pki/ca-trust/extracted/java/cacerts /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatching
+      args:
+        removes: /etc/pki/ca-trust/extracted/java/cacerts
+    - name: Wait 2 seconds, but only start checking after 3 seconds
+      wait_for_connection:
+        delay: 2
+        timeout: 3
+    - import_role:
+        name: patchCheck
+        tasks_from: patchIt
+    - name: restore java cacerts
+      shell: cp -pf /etc/pki/ca-trust/extracted/java/cacerts /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatchNew; mv -f /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatching /etc/pki/ca-trust/extracted/java/cacerts
+      args:
+        removes: /etc/pki/ca-trust/extracted/java/cacerts.bak.linuxPatching
+
+    - reboot:
+
+    - name: Pause 2 seconds
+      ansible.builtin.pause:
+        seconds: 3
+
+    - import_role:
+        name: patchCheck
+        tasks_from: after
+

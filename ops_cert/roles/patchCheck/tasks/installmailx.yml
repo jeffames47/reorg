@@ -1,0 +1,15 @@
+- name: upload installmailx
+  copy:
+    src: "{{ role_path }}/files/installmailx.sh"
+    dest: "/usr/local/installmailx.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /usr/local/installmailx
+  args:
+    chdir: "/usr/local"
+  register: installmailx
+
+- debug:
+    var: installmailx

@@ -1,0 +1,51 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: 9/9/21
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+#  pre_tasks:
+#    - name: Include all main.yaml file for the ENV
+#      include_vars: "vars/{{envVar}}/main.yml"
+#    - name: Include file for the Env/Application
+#      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+
+    - name: mkdir /opt/openssl
+      shell: mkdir /opt/openssl ; cd /opt/openssl
+      args:
+        warn: no
+
+    - copy:
+        src: "files/openssl-1.1.1l.tar.gz"
+        dest: /opt/openssl
+
+    - name: untar
+      shell: cd /opt/openssl ; tar -xf openssl-1.1.1l.tar.gz 
+      args:
+        warn: no
+
+    - copy:
+        src: "files/openssl.sh"
+        dest: /etc/profile.d
+
+#    - copy:
+#        src: "files/openssl-1.1.1l.tar.gz"
+#        dest: /opt/openssl/openssl-1.1.1l
+#
+
+#    - copy:
+#        src: "roles/patchcheck/files/Open_ssl.sh"
+#        dest: /opt/openssl/openssl-1.1.1l
+
+#    - import_role:
+#       name: patchCheck
+#       tasks_from: copy_etc_profile.d_openssl.yml
+
+    - copy:
+        src: "files/openssl.sh"
+        dest: /etc/profile.d
+
+    - import_role:
+       name: patchCheck
+       tasks_from: Open_ssl.yml

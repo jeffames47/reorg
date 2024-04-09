@@ -1,0 +1,15 @@
+- name: upload chkSW.sh script
+  copy:
+    src: "{{ role_path }}/files/chkSW.sh"
+    dest: "/tmp/chkSW.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/chkSW.sh swiagent SolarWinds
+  args:
+    chdir: "/tmp"
+  register: chkSW
+
+- debug:
+    var: chkSW

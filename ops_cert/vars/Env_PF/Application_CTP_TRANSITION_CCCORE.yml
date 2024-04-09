@@ -1,0 +1,20 @@
+health_check_url_enabled: true
+health_check_url:
+  referencedataservice:
+    - http
+    - 8080
+    - referencedataservice/services/health
+  configservice:
+    - http
+    - 8080
+    - configservice/services/health
+
+health_check_tomcat_enabled: true
+health_tomcat_port: 8080
+
+health_check_apache_enabled: false
+health_apache_port: 80
+
+health_check_mnt_point_enabled: true
+health_mnt_point:
+  - /mnt/auto/nas01/netops/env-tools/pfnet

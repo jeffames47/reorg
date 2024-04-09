@@ -1,0 +1,16 @@
+- name: upload manage engine restart script
+  copy:
+    src: "{{ role_path }}/files/startFire.sh"
+    dest: "/tmp/startFire.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/startFire.sh
+  args:
+    chdir: "/tmp"
+  register: startFire
+
+- debug:
+    var: startFire
+

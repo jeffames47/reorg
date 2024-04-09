@@ -1,0 +1,15 @@
+- name: upload docker_install script
+  copy:
+    src: "{{ role_path }}/files/docker_install.sh"
+    dest: "/tmp/docker_install.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/docker_install.sh
+  args:
+    chdir: "/tmp"
+  register: dockerinstall
+
+- debug:
+    var: dockerinstall

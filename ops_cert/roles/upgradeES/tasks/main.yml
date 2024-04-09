@@ -1,0 +1,4 @@
+# - include_tasks: preUpgrade.yml
+- include_tasks: upgrade.yml
+- include_tasks: waitUntilYellow.yml
+- include_tasks: postUpgrade.yml

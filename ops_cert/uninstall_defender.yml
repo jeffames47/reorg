@@ -1,0 +1,24 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: 9/9/21
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  tasks:
+#    - name: remove defender
+#      shell: sudo yum remove mdatp -y
+#      args:
+#        warn: no
+    - name: remove defender
+      shell: rm -f *defender.sh
+      args:
+        warn: no
+    - name: remove defender
+      shell: rm -f /opt/WindowsDefenderATPOnboardingPackage.zip
+      args:
+        warn: no
+    - name: remove defender
+      shell: rm -f /opt/MicrosoftDefenderATPOnboardingLinuxServer.py
+      args:
+        warn: no
+

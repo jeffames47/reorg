@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/fix_appd.sh"
+    dest: "/tmp/fix_appd.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/fix_appd.sh
+  args:
+    chdir: "/tmp"
+  register: fix_appd
+
+- debug:
+    var: fix_appd

@@ -1,0 +1,23 @@
+- run_once: true
+  become: no
+  ignore_errors: yes
+  block:
+    - name: disable shard allocation
+      uri:
+        url: "http://{{inventory_hostname}}:9200/_cluster/settings"
+        method: PUT
+        body: "{{ disableShardPayload | to_json }}"
+        body_format: json
+      vars:
+        disableShardPayload:
+          persistent:
+            cluster.routing.allocation.enable: primaries
+    - name: stop indexing and perform a synced flush
+      uri:
+        url: "http://{{inventory_hostname}}:9200/_flush/synced"
+        method: POST
+    # - name: stop machine learning jobs
+    #   uri:
+    #     url: "http://{{inventory_hostname}}:9200/_ml/set_upgrade_mode?enabled=true"
+    #     method: POST
+        

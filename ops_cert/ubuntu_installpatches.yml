@@ -1,0 +1,18 @@
+---
+- name: "Upgrade Ubuntu 22.04 Packages"
+  hosts: all
+  become: true
+  vars:
+    all_packages: "*"
+
+  tasks:
+    # Check for apt updates
+    - name: "Check for apt updates"
+      apt:
+        update_cache: yes
+
+    # Upgrade packages if updates are available
+    - name: "Upgrade Ubuntu packages"
+      apt:
+        name: "{{ all_packages }}"
+        state: latest

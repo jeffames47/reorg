@@ -1,0 +1,20 @@
+- name: Create directory /tmp/patchCheck
+  file:
+    path: /tmp/patchCheck
+    state: directory
+
+- name: upload patchIt_SIMPLE_ONE.sh
+  copy:
+    src: "{{ role_path }}/files/patchIt_SIMPLE_ONE.sh"
+    dest: "/tmp/patchCheck/patchIt.sh_SIMPLE_ONE"
+    mode: "0755"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/patchCheck/patchIt_SIMPLE_ONE.sh
+  args:
+    chdir: "/tmp/patchCheck"
+  register: patchIt_SIMPLE_ONE
+
+- debug:
+    var: patchIt_SIMPLE_ONE

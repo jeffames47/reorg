@@ -1,0 +1,21 @@
+- name: Create directory /tmp/LINUX
+  file:
+    path: /tmp/LINUX
+    state: directory
+
+- name: upload cf_chk_and_reboot1.sh
+  copy:
+    src: "{{ role_path }}/files/cf_chk_and_reboot1.sh"
+    dest: "/tmp/LINUX/cf_chk_and_reboot1.sh"
+    mode: "0755"
+    force: yes
+
+- name: execute
+#  shell: sh /tmp/LINUX/cf_chk_and_reboot1.sh Env_QA
+  shell: sh /tmp/LINUX/cf_chk_and_reboot1.sh {{ envVar }}
+  args:
+    chdir: "/tmp/LINUX"
+  register: cf_chk_and_reboot1
+
+- debug:
+    var: cf_chk_and_reboot1

@@ -1,0 +1,55 @@
+# This playbook will: import root cert and make a backup
+# Last modified: Tue Sep 13 09:57:37 EST 2022
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+
+#    - import_role:
+#        name: vcenter
+#        tasks_from: prcreateSnapshot.yml
+
+#    - name: rm -f /opt/splunkinstall.sh 	
+#      shell: rm -f /opt/splunkinstall.sh 2> /dev/null
+#      args:
+#        warn: no
+
+    - name: rm -rf /opt/splunkforwarder
+      shell: rm -rf /opt/splunkforwarder 2> /dev/null
+      args:
+        warn: no
+
+    - name: rm -Rf /opt/splunk
+      shell: rm -Rf /opt/splunk 2> /dev/null
+      args:
+        warn: no
+
+#    - import_role:
+#       name: patchCheck
+#       tasks_from: rmsplunk
+
+    - name: kill splunk process
+      ansible.builtin.command: "kill -9 `ps -ef | grep splunk | grep -v grep | awk '{print $2;}'`"
+      when: ps -ef | grep splunk | grep -v grep | awk '{print $2;}'
+      args:
+        warn: no
+
+#- name: copy rpm removal script to remote hosts
+#  copy:
+#    src: roles/patchCheck/files/rmsplunk.sh
+#    dest: /tmp/rmsplunk.sh
+#    mode: 777
+
+#- name: Remove splunk RPM from remote host if it exist.
+#  command: sh /tmp/rmsplunk.sh
+
+#- name: kill any remaining splunk processes
+#  ansible.builtin.command: "kill -9 `ps -ef | grep splunk | grep -v grep | awk '{print $2;}'`"
+#  when: ps -ef | grep splunk | grep -v grep | awk '{print $2;}'
+#

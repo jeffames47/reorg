@@ -1,0 +1,16 @@
+- name: upload  chk_tomcat_test.sh
+  copy:
+    src: "{{ role_path }}/files/mail.sh"
+    dest: "/tmp/mail.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/mail.sh
+  args:
+    chdir: "/tmp"
+  register: mail
+
+- debug:
+    var: mail
+

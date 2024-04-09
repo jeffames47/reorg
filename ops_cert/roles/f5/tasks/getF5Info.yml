@@ -1,0 +1,23 @@
+- name: get all nic
+  shell: hostname -I
+  register: allNics
+
+- set_fact:
+    nicArray: "{{ (allNics.stdout | trim).split(' ') }}"
+
+- debug:
+    var: nicArray
+
+- name: load f5 json
+  include_vars:
+    file: "{{ playbook_dir }}/files/{{ (envVar == 'Env_PR') | ternary('va-bigip-result.json', 'ma-bigip-result.json') }}"
+    name: f5Info
+
+- set_fact:
+    f5Pools: "{{ (f5Pools | default([])) + f5Info[item] }}"
+  when: item in f5Info
+  with_items: "{{ nicArray }}"
+  
+- debug:
+    var: f5Pools
+

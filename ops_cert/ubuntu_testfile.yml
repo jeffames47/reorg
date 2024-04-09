@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Create ansibletest.txt file
+    file:
+      path: /tmp/ansibletest.txt
+      state: touch
+      force: yes
+
+  - name: Write content to ansibletest.txt file
+    lineinfile:
+      path: /tmp/ansibletest.txt
+      line: "This is a test file created by Ansible."

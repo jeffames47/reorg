@@ -1,0 +1,164 @@
+# This playbook will: import root cert and make a backup
+# Last modified: Tue Sep 13 09:57:37 EST 2022
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+
+#    - import_role:
+#        name: vcenter
+#        tasks_from: prcreateSnapshot.yml
+
+    - name: realm leave curaspan.local
+      shell: realm leave curaspan.local 2> /dev/null ; sleep 1
+      args:
+        warn: no
+
+    - name: realm leave ad.curaspan.local
+      shell: realm leave ad.curaspan.local 2> /dev/null ; sleep 1
+      args:
+        warn: no
+
+    - name: realm leave navihealth.local
+      shell: realm leave navihealth.local 2> /dev/null ; sleep 1
+      args:
+        warn: no
+
+    - name: realm leave navidev.local
+      shell: realm leave navidev.local 2> /dev/null ; sleep 1
+      args:
+        warn: no
+
+    - name:
+      shell: yum -y install nscd 2> /dev/null
+      args:
+        warn: no
+
+    - name:
+      shell: yum -y install nss-pam-ldapd 2> /dev/null
+      args:
+        warn: no
+
+    - name:
+      shell: yum -y install openssl 2> /dev/null
+      args:
+        warn: no
+
+    - import_role:
+       name: patchCheck
+       tasks_from: fix_ldap
+
+    - name: Create directory /etc/openldap/cacerts if it does not exist 
+      file:
+        path: /etc/openldap/cacerts
+        state: directory
+
+    - copy:
+        src: "files/curaspan-ca-2014.pem"
+        dest: /etc/openldap/cacerts
+
+    - copy:
+        src: "files/nsswitch.conf"
+        dest: /etc
+
+    - copy:
+        src: "files/nscd.conf"
+        dest: /etc
+
+    - copy:
+        src: "files/nslcd.conf"
+        dest: /etc
+
+#    - name: upload sudoers
+#      copy:
+#        src: "files/sudoers"
+#        dest: /etc
+
+    - copy:
+        src: "files/pam_ldap.conf"
+        dest: /etc
+
+    - copy:
+        src: "files/password-auth-ac"
+        dest: /etc/pam.d
+
+    - copy:
+        src: "files/system-auth-ac"
+        dest: /etc/pam.d
+
+    - name: restart nscd
+      shell: systemctl restart nscd 
+      args:
+        warn: no
+
+    - name: systemctl enable nscd
+      shell: systemctl enable nscd
+      args:
+        warn: no
+
+    - name: systemctl enable nslcd
+      shell: systemctl enable nslcd
+      args:
+        warn: no
+
+    - name:
+      shell: echo "%sudo-devops ALL=(ALL) ALL" >> /etc/sudoers 2> /dev/null
+      args:
+        warn: no
+
+#    - name:
+#      shell: echo "%sudo-dev ALL=(ALL) ALL" >> /etc/sudoers 2> /dev/null
+#      args:
+#        warn: no
+#
+#    - name:
+#      shell: echo "%sudo-qa ALL=(ALL) ALL" >> /etc/sudoers 2> /dev/null
+#      args:
+#        warn: no
+#
+#    - name:
+#      shell: echo "%sudo-stg ALL=(ALL) ALL" >> /etc/sudoers 2> /dev/null
+#      args:
+#        warn: no
+
+    - name:
+      shell: echo "%netadmin  ALL=(ALL) ALL" >> /etc/sudoers 2> /dev/null
+      args:
+        warn: no
+
+    - name: restart nslcd
+      shell: systemctl restart nslcd
+      args:
+        warn: no
+
+#    - command: chdir=/etc/pam.d/ {{ item }}
+#      with_items:
+#      - mv system-auth system-auth.bk
+#      - mv smartcard-auth smartcard-auth-ac
+#      - mv postlogin postlogin-ac
+#      - mv password-auth password-auth.b
+#      - mv fingerprint-auth fingerprint-auth-ac
+#      - ln -s smartcard-auth-ac smartcard-auth
+#      - ln -s fingerprint-auth-ac fingerprint-auth
+#      - ln -s password-auth-ac password-auth
+#      - ln -s system-auth-ac system-auth
+#      - ln -s postlogin-ac postlogin
+# do manually for now need to fix later 
+#cd /etc/pam.d/
+#mv system-auth system-auth.bk
+#mv smartcard-auth smartcard-auth-ac
+#mv postlogin postlogin-ac
+#mv password-auth password-auth.bk
+#mv fingerprint-auth fingerprint-auth-ac
+#ln -s smartcard-auth-ac smartcard-auth
+#ln -s fingerprint-auth-ac fingerprint-auth
+#ln -s password-auth-ac password-auth
+#ln -s system-auth-ac system-auth
+#ln -s postlogin-ac postlogin
+

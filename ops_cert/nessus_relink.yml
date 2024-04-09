@@ -1,0 +1,38 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: 9/9/21
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+#  pre_tasks:
+#    - name: Include all main.yaml file for the ENV
+#      include_vars: "vars/{{envVar}}/main.yml"
+#    - name: Include file for the Env/Application
+#      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+    - copy:
+        src: "files/NessusAgent-10.1.3-es7.x86_64.rpm"
+        dest: /tmp
+#    - copy:
+#        src: "/opt/fireeye"
+#        dest: /opt
+#    - import_role:
+#       name: patchCheck
+#       tasks_from: nessus
+
+    - name:
+      shell:  /opt/nessus_agent/sbin/nessuscli agent link --key=18187a2362968d8e18a288eb4c23703d8fb71d5b00b08b0db1f0adca27b653d1 --cloud --groups=CTP
+      args:
+        warn: no
+
+
+#    - name:
+#      shell: rm -f /tmp/nessus.sh
+#      args:
+#        warn: no
+#
+#    - name:
+#      shell: rm -f /tmp/falcon-sensor-6.46.0-14306.el7.x86_64.rpm
+#      args:
+#        warn: no
+

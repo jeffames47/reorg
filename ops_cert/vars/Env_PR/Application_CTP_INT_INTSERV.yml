@@ -1,0 +1,14 @@
+health_check_url_enabled: false
+
+health_check_tomcat_enabled: true
+health_tomcat_port: 8080
+
+health_check_apache_enabled: false
+### health_apache_port: 80
+
+health_check_mnt_point_enabled: true
+health_mnt_point:
+  - /mnt/edisdocs
+  - /mnt/dc2share
+  - /mnt/jdl_input
+  - /mnt/aws_edisdocs

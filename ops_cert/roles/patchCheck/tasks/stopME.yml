@@ -1,0 +1,16 @@
+- name: upload manage engine 
+  copy:
+    src: "{{ role_path }}/files/removeME.sh"
+    dest: "/tmp/removeME.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/removeME.sh
+  args:
+    chdir: "/tmp"
+  register: removeME
+
+- debug:
+    var: removeME
+

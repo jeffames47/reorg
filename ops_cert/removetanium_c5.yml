@@ -1,0 +1,40 @@
+# This playbook will: import root cert and make a backup
+# Last modified: Tue Sep 13 09:57:37 EST 2022
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+#  gather_facts: true
+  become: yes
+  pre_tasks:
+    - name: Include all main.yaml file for the ENV
+      include_vars: "vars/{{envVar}}/main.yml"
+    - name: Include file for the Env/Application
+      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+
+#    - import_role:
+#        name: vcenter
+#        tasks_from: dvcreateSnapshot.yml
+
+    - name:
+      shell: service taniumclient stop
+      args:
+        warn: no
+
+    - name:
+      shell: service taniumclient disable
+      args:
+        warn: no
+
+    - name:
+      shell: rm -rf /opt/Tanium
+      args:
+        warn: no
+
+    - import_role:
+        name: patchCheck
+        tasks_from: removeTanium.yml
+
+    - name:
+      shell: rm -f /usr/local/removeTanium.sh
+      args:
+        warn: no

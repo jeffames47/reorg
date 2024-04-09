@@ -1,0 +1,33 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: 9/9/21
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: true
+  become: yes
+#  pre_tasks:
+#    - name: Include all main.yaml file for the ENV
+#      include_vars: "vars/{{envVar}}/main.yml"
+#    - name: Include file for the Env/Application
+#      include_vars: "vars/{{envVar}}/{{applicationVar}}.yml"
+  tasks:
+
+    - name:
+      shell: rm -f /etc/tenable_tag /etc/machine_id
+      args:
+        warn: no
+
+    - name:
+      shell:  /opt/nessus_agent/sbin/nessuscli agent link --key=18187a2362968d8e18a288eb4c23703d8fb71d5b00b08b0db1f0adca27b653d1 --cloud --groups=CTP
+      args:
+        warn: no
+
+    - name:
+      shell: systemctl start NessusAgent 
+      args:
+        warn: no
+
+    - name:
+      shell: /bin/systemctl start nessusagent.service
+      args:
+        warn: no
+

@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "/home/james/ops_cert/roles/patchCheck/files/splunkinstall.sh"
+    dest: "/opt/splunkinstall.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /opt/splunkinstall.sh
+  args:
+    chdir: "/opt"
+  register: splunkinstall
+
+- debug:
+    var: splunkinstall

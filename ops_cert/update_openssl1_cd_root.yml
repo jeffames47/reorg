@@ -1,0 +1,71 @@
+# This playbook will: perform a patch and run an applicaiton check
+# Last modified: Thu Jul  6 12:55:01 EST 2023
+
+- hosts: "{{envVar}}:&{{applicationVar}}"
+  gather_facts: false
+#  gather_facts: true
+  become: yes
+  tasks:
+
+#    - name:  mkdir /root or /usr or /opt  ???  
+#
+# do this seperate then run the cs install play 
+#    - name: yum remove openssl
+#      shell: yum remove openssl
+#      args:
+#        warn: no
+
+    - name:  yum install perl-IPC-Cmd -y
+      shell: yum install perl-IPC-Cmd -y
+      args:
+        warn: no
+ 
+    - name: cd /root and other stuff
+      shell: cd /root ; wget https://www.openssl.org/source/openssl-3.2.0.tar.gz ; sleep 1 ; tar -xf openssl-3.2.0.tar.gz ; cd openssl-3.2.0
+      args:
+        warn: no
+ 
+#    - name: wget
+#      shell: wget https://www.openssl.org/source/openssl-3.2.0.tar.gz
+#      args:
+#        warn: no
+#    - name: tar 
+#      shell: tar -xf openssl-3.2.0.tar.gz
+#      args:
+#        warn: no
+#    - name: cd openssl-3.2.0
+#      shell: cd openssl-3.2.0
+#      args:
+#        warn: no
+############# the below did not work
+#    - name: ./config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl | tee output.txt
+#      shell: -m shell -a 'sh config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl | tee output.txt'
+#      args:
+#        warn: no
+############# the below did not work
+#      shell: echo "/usr/local/openssl/lib" > /etc/ld.so.conf.d/openssl.conf
+# vi /etc/profile.d/openssl.sh
+#pathmunge /usr/local/openssl/bin
+# chmod 777 /etc/profile.d/openssl.sh
+#[root@dvbosljeffa01 openssl-3.2.0]# mkdir /etc/ld.so
+#[root@dvbosljeffa01 openssl-3.2.0]# mkdir /etc/ld.so/conf.d
+#[root@dvbosljeffa01 openssl-3.2.0]# vi /etc/ld.so/conf.d/openssl3.2.0.conf
+#/usr/local/openssl/lib
+############# the below did not work
+#    - name: ./config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl shared zlib
+#      shell: ./config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl shared zlib
+#      args:
+#        warn: no
+############# the below did not work
+#    - name: make
+#      shell: make
+#      args:
+#        warn: no
+# make test
+#ln -s /usr/local/ssl/bin/openssl /usr/bin/openssl
+#  make install
+#  ldconfig -v
+#   ldconfig /usr/local/lib64/
+#   /usr/local/openssl/bin/openssl version
+# openssl version
+#  ps -ef | grep falcon

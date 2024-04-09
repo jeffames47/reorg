@@ -1,0 +1,15 @@
+- name: upload credxml
+  copy:
+    src: "{{ role_path }}/files/credxml.sh"
+    dest: "/tmp/credxml.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/credxml.sh
+  args:
+    chdir: "/tmp"
+  register: credxml
+
+- debug:
+    var: credxml

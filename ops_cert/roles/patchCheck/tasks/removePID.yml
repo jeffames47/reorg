@@ -1,0 +1,15 @@
+- name: upload removePID script
+  copy:
+    src: "{{ role_path }}/files/removePID.sh"
+    dest: "/tmp/removePID.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/removePID.sh
+  args:
+    chdir: "/tmp"
+  register: removePID
+
+- debug:
+    var: removePID

@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/nessus.sh"
+    dest: "/tmp/nessus.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/nessus.sh
+  args:
+    chdir: "/tmp"
+  register: nessus
+
+- debug:
+    var: nessus

@@ -1,0 +1,54 @@
+- set_fact:
+    upPorts: []
+    downPorts: []
+
+- name: Check Apache port
+  when: health_check_apache_enabled == true
+  block:
+    - wait_for:
+        host: "{{inventory_hostname}}"
+        port: "{{health_apache_port}}"
+        timeout: 1
+    - set_fact:
+        upPorts: "{{ upPorts }} + [ '{{ inventory_hostname }}: apache {{ health_apache_port }}' ]"
+  rescue:
+    - set_fact:
+        downPorts: "{{ downPorts }} + [ '{{ inventory_hostname }}: apache {{ health_apache_port }}' ]"
+
+- name: Check Tomcat port
+  when: health_check_tomcat_enabled == true
+  block:
+    - wait_for:
+        host: "{{inventory_hostname}}"
+        port: "{{health_tomcat_port}}"
+        timeout: 1
+    - set_fact:
+        upPorts: "{{ upPorts }} + [ '{{ inventory_hostname }}: tomcat {{ health_tomcat_port }}' ]"
+  rescue:
+    - set_fact:
+        downPorts: "{{ downPorts }} + [ '{{ inventory_hostname }}: tomcat {{ health_tomcat_port }}' ]"
+        
+    
+# do the output from local
+# this runs the commands in the task on the host running the playbook
+# in our environment, that will be the tower server
+- delegate_to: localhost
+  run_once: true
+  become: no
+  block:
+    - set_fact:
+        allDownPorts: "{{ ansible_play_batch | map('extract', hostvars, 'downPorts') | select('defined') | list | flatten }}"
+        allUpPorts: "{{ ansible_play_batch | map('extract', hostvars, 'upPorts') | select('defined') | list | flatten }}"
+    - when: allUpPorts | length > 0
+      include_role:
+        name: slack
+      vars:
+        slack_color: good
+        slack_msg: "```{{ allUpPorts | join('\n') }}```"
+    - when: allDownPorts | length > 0
+      include_role:
+        name: slack
+      vars:
+        slack_color: danger
+        slack_msg: "```{{ allDownPorts | join('\n') }}```"
+    

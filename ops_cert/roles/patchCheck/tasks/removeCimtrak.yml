@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/removeCimtrak.sh"
+    dest: "/tmp/removeCimtrak.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/removeCimtrak.sh Cim
+  args:
+    chdir: "/tmp"
+  register: removeCimtrak
+
+- debug:
+    var: removeCimtrak

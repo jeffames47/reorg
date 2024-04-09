@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/chkcs.sh"
+    dest: "/tmp/chkcs.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/chkcs.sh
+  args:
+    chdir: "/tmp"
+  register: chkcs
+
+- debug:
+    var: chkcs

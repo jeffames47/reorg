@@ -1,0 +1,25 @@
+- name: upload script
+
+  copy:
+    src: "{{ role_path }}/files/openssl.sh"
+    dest: "opt/openssl"
+    mode: "777"
+    force: yes
+
+  copy:
+    src: "{{ role_path }}/files/openssl.sh"
+    dest: "/etc/profile.d/openssl.sh"
+    mode: "777"
+    force: yes
+
+  copy:
+    src: "{{ role_path }}/files/openssl.sh"
+    dest: "/etc/profile.d"
+    mode: "777"
+    force: yes
+
+  copy:
+    src: "{{ role_path }}/roles/patchcheck/files/openssl.sh"
+    dest: "/etc/profile.d"
+    mode: "777"
+    force: yes

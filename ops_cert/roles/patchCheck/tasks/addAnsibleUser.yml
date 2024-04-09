@@ -1,0 +1,20 @@
+- name: Create directory /tmp/patchCheck
+  file:
+    path: /tmp/patchCheck
+    state: directory
+
+- name: upload spaceCheck.sh
+  copy:
+    src: "{{ role_path }}/files/addAnsibleUser.sh"
+    dest: "/tmp/patchCheck/addAnsibleUser.sh"
+    mode: "0755"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/patchCheck/addAnsibleUser.sh
+  args:
+    chdir: "/tmp/patchCheck"
+  register: addAnsibleUser
+
+- debug:
+    var: addAnsibleUser

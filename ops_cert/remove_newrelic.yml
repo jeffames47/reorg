@@ -1,0 +1,15 @@
+
+- hosts: all
+  gather_facts: true
+  become: yes
+  tasks:
+
+    - name: remove newrelic
+      shell: yum remove -y newrelic*
+      args:
+        warn: no
+
+    - import_role:
+       name: patchCheck
+       tasks_from: small_chk_services
+

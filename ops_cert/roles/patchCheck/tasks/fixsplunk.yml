@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/fixsplunk.sh"
+    dest: "/tmp/fixsplunk.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/fixsplunk.sh
+  args:
+    chdir: "/tmp"
+  register: fixsplunk
+
+- debug:
+    var: fixsplunk

@@ -1,0 +1,10 @@
+- name: Slack Notification
+  become: no
+  when: not (supressSlack | default(false))
+  slack:
+    # msg:  "{{ ('@here' in slack_msg or '```' in slack_msg) | ternary(slack_msg, navi_environment|upper + ': ' + slack_msg) }}"
+    msg: "{{ slack_msg }}"
+    color: "{{ slack_color | default('normal') }}"
+    validate_certs: no
+    token:  "{{ slack_token | default(defaultSlackToken) }}"
+  delegate_to: localhost

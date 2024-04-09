@@ -1,0 +1,15 @@
+- name: upload script
+  copy:
+    src: "{{ role_path }}/files/restarttomcat.sh"
+    dest: "/tmp/restarttomcat.sh"
+    mode: "777"
+    force: yes
+
+- name: execute
+  shell: sh /tmp/restarttomcat.sh
+  args:
+    chdir: "/tmp"
+  register: restarttomcat
+
+- debug:
+    var: restarttomcat
